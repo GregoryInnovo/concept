@@ -1,0 +1,84 @@
+<div class="modal-overlay">
+  <div class="modal-content">
+    <div class="comprobante">
+      <h2 class="titulo">COMPROBANTE EMISION DE GIROS</h2>
+      
+      <div class="fecha-hora">
+        <div>Fecha de emisión {{datosComprobante.fecha}}</div>
+        <div>Hora {{datosComprobante.hora}}</div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-row">
+          <div class="label">Nro. Giro</div>
+          <div class="value">{{datosComprobante.numeroGiro}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Oficina</div>
+          <div class="value">{{datosComprobante.oficina}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Cajero</div>
+          <div class="value">{{datosComprobante.cajero}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Número de cuenta</div>
+          <div class="value">{{datosComprobante.numeroCuenta}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Solicitante</div>
+          <div class="value">{{datosComprobante.solicitante}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Identificación del solicitante</div>
+          <div class="value">{{datosComprobante.identificacionSolicitante}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Valor giro</div>
+          <div class="value">{{datosComprobante.valorGiro}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Valor comisión</div>
+          <div class="value">{{datosComprobante.valorComision}}</div>
+        </div>
+
+        <div class="info-row total">
+          <div class="label">Valor giro+comisión+impuestos</div>
+          <div class="value">{{datosComprobante.valorTotal}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Identificación del beneficiario</div>
+          <div class="value">{{datosComprobante.identificacionBeneficiario}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Nombre del beneficiario</div>
+          <div class="value">{{datosComprobante.nombreBeneficiario}}</div>
+        </div>
+      </div>
+
+      <div class="notas">
+        <p>Recuerde que pasados 15 días hábiles sin cobrar el giro, será devuelto a la cuenta emisora,
+        exceptuando los conceptos relacionados a la comisión.</p>
+        <p>Por favor, verifique que la información correspondiente al titular, cuenta y valor sean correctos.</p>
+      </div>
+
+      <div class="email-info">
+        <p>En constancia de lo anterior se envía comprobante a la cuenta cuenta de correo</p>
+        <p class="email">{{datosComprobante.email}}</p>
+      </div>
+
+      <div class="button-container">
+        <button class="btn-aceptar" (click)="aceptar()">ACEPTAR</button>
+      </div>
+    </div>
+  </div>
+</div>

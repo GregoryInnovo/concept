@@ -1,0 +1,168 @@
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
+<!-- * * * * * * * to get started with your project! * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+<style>
+  :host {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol";
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .main-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .stepper-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 2rem;
+    position: relative;
+  }
+
+  .step {
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #1976d2;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-weight: bold;
+  }
+
+  .step-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .step-description {
+    font-size: 0.9rem;
+    color: #666;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  .step-connector {
+    position: absolute;
+    top: 20px;
+    left: 70px;
+    right: 70px;
+    height: 2px;
+    background-color: #ccc;
+    z-index: -1;
+  }
+
+  .step.active .step-number {
+    background-color: #2196f3;
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.2);
+  }
+
+  .step.completed .step-number {
+    background-color: #4caf50;
+  }
+
+  .navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding: 0 1rem;
+  }
+
+  button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-previous {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+
+  .btn-next {
+    background-color: #1976d2;
+    color: white;
+  }
+
+  .btn-previous:not(:disabled):hover {
+    background-color: #d0d0d0;
+  }
+
+  .btn-next:not(:disabled):hover {
+    background-color: #1565c0;
+  }
+</style>
+
+<div class="main-container">
+  <h1>Proceso de Emisión de Giro</h1>
+  
+  <div class="stepper-container">
+    <div class="step-connector"></div>
+    
+    @for (step of steps; track step.number) {
+      <div class="step" [class.active]="isStepActive(step.number)" [class.completed]="isStepCompleted(step.number)">
+        <div class="step-number">{{step.number}}</div>
+        <div class="step-title">{{step.title}}</div>
+        <div class="step-description">{{step.description}}</div>
+      </div>
+    }
+  </div>
+
+  <div class="step-content">
+    @if (currentStep === 1) {
+      <app-consulta-giro />
+    }
+    @if (currentStep === 2) {
+      <app-validacion-biometrica (validacionCompletada)="nextStep()" />
+    }
+    @if (currentStep === 3) {
+      <app-valor-giro (valorConfirmado)="nextStep()" />
+    }
+    @if (currentStep === 4) {
+      <app-beneficiario-giro 
+        (beneficiarioConfirmado)="nextStep()" 
+        (reiniciarProceso)="currentStep = 1" />
+    }
+  </div>
+
+  <div class="navigation-buttons">
+    <button class="btn-previous" (click)="previousStep()" [disabled]="currentStep === 1">
+      Anterior
+    </button>
+    <button class="btn-next" (click)="nextStep()" [disabled]="currentStep === totalSteps">
+      Siguiente
+    </button>
+  </div>
+</div>
+
+<router-outlet />

@@ -1,0 +1,75 @@
+<div class="valor-giro-container">
+  <!-- Información del cliente -->
+  <div class="client-info-section">
+    <div class="info-row">
+      <div class="info-group">
+        <label>TIPO DOCUMENTO</label>
+        <div class="info-value">{{clientData.tipoDocumento}}</div>
+      </div>
+      <div class="info-group">
+        <label>NÚMERO DOCUMENTO</label>
+        <div class="info-value">{{clientData.numeroDocumento}}</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-group">
+        <label>NOMBRE CLIENTE</label>
+        <div class="info-value">{{clientData.nombreCliente}}</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-group">
+        <label>TELÉFONO</label>
+        <div class="info-value">{{clientData.telefono}}</div>
+      </div>
+      <div class="info-group">
+        <label>MAIL</label>
+        <div class="info-value">{{clientData.email}}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Valor de la comisión -->
+  <div class="comision-section">
+    <label class="comision-label">VALOR DE LA COMISIÓN</label>
+    <div class="comision-value">${{valorComision}}</div>
+  </div>
+
+  <!-- Formulario de valor y cuenta -->
+  <div class="form-section">
+    <div class="form-group">
+      <label for="valorGiro">VALOR DEL GIRO</label>
+      <div class="input-group">
+        <span class="currency-symbol">$</span>
+        <input 
+          type="text" 
+          id="valorGiro" 
+          [(ngModel)]="valorGiro" 
+          class="form-control"
+          placeholder="Ingrese el valor del giro">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="cuentaOrigen">CUENTA ORIGEN</label>
+      <select id="cuentaOrigen" [(ngModel)]="cuentaOrigen" class="form-control">
+        @for (cuenta of cuentasDisponibles; track cuenta) {
+          <option [value]="cuenta">{{cuenta}}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Valor total -->
+  <div class="total-section">
+    <label class="total-label">VALOR TOTAL</label>
+    <div class="total-value">${{valorTotal}}</div>
+  </div>
+
+  <!-- Botón de aceptar -->
+  <div class="button-section">
+    <button class="btn-aceptar" (click)="confirmarValor()">ACEPTAR</button>
+  </div>
+</div>
