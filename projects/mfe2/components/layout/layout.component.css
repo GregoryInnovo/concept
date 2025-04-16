@@ -10,21 +10,30 @@
   flex: 1;
   padding: 20px;
   margin-left: 250px;
-  /* margin-left: 200px; */
   transition: margin-left 0.3s ease;
   width: calc(100% - 250px);
   box-sizing: border-box;
 }
 
 /* Add a class to be toggled with JavaScript when drawer is closed */
-:host-context(.drawer-closed) .main-content {
-  margin-left: 64px; /* Match the width of the closed drawer */
+/* :host-context(.drawer-closed) .main-content { */
+  /* margin-left: 64px;  */
+  /* width: calc(100% - 64px); */
+  
+  
+  /* width: 100%; */
+  /* margin-left: 4px; */
+/* } */
+
+
+.drawer-closed .main-content {
+  margin-left: 64px;
   width: calc(100% - 64px);
 }
 
 /* Responsive styles for smaller screens */
 @media (max-width: 768px) {
-  .main-content {
+   .main-content {
     padding: 10px;
   }
   
