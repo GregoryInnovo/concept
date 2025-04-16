@@ -3,7 +3,7 @@
     <div class="logo-container">
       <div class="logo">C</div>
       @if (isOpen) {
-        <img src="../../../assets/images/coomeva-logo.png" alt="logo" class="logo-text">
+        <span class="logo-text">oomeva</span>
       }
     </div>
     <button class="toggle-btn" (click)="toggleDrawer()">
@@ -20,7 +20,7 @@
       @for (item of navItems; track $index) {
         <li>
           <a [routerLink]="item.route" routerLinkActive="active-link">
-            <span class="material-icons">{{item.icon}}</span>
+            <span class="material-icons nav-icon">{{item.icon}}</span>
             @if (isOpen) {
               <span class="nav-label">{{item.label}}</span>
             }

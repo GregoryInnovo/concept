@@ -13,10 +13,10 @@ import { DrawerService } from './drawer.service';
 export class DrawerComponent implements OnInit {
   isOpen = true;
   navItems = [
-    { icon: 'email', label: 'Emisión de Giros', route: '/emision-giros' },
+    { icon: 'mail_outline', label: 'Emisión de Giros', route: '/emision-giros' },
     { icon: 'payments', label: 'Pago de Giros', route: '/pago-giros' },
-    { icon: 'cancel', label: 'Anulación de Giros', route: '/anulacion-giros' },
-    { icon: 'check_circle', label: 'Autorizaciones', route: '/autorizaciones' },
+    { icon: 'close', label: 'Anulación de Giros', route: '/anulacion-giros' },
+    { icon: 'check_circle_outline', label: 'Autorizaciones', route: '/autorizaciones' },
     { icon: 'search', label: 'Consultas', route: '/consultas' },
     { icon: 'settings', label: 'Admin', route: '/admin' }
   ];

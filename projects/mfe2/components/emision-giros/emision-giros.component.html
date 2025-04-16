@@ -1,0 +1,41 @@
+<div class="main-container">
+  <h1>Emisión de Giro</h1>
+  
+  <div class="stepper-container">
+    <div class="step-connector"></div>
+    
+    @for (step of steps; track step.number) {
+      <div class="step" [class.active]="isStepActive(step.number)" [class.completed]="isStepCompleted(step.number)">
+        <div class="step-number">{{step.number}}</div>
+        <div class="step-title">{{step.title}}</div>
+        <div class="step-description">{{step.description}}</div>
+      </div>
+    }
+  </div>
+
+  <div class="step-content">
+    @if (currentStep === 1) {
+        <app-consulta-giro />
+      }
+    @if (currentStep === 2) {
+      <app-validacion-biometrica (validacionCompletada)="nextStep()" />
+    }
+    @if (currentStep === 3) {
+      <app-valor-giro (valorConfirmado)="nextStep()" />
+    }
+    @if (currentStep === 4) {
+      <app-beneficiario-giro 
+        (beneficiarioConfirmado)="nextStep()" 
+        (reiniciarProceso)="currentStep = 1" />
+    }
+  </div>
+
+  <div class="navigation-buttons">
+    <button class="btn-previous" (click)="previousStep()" [disabled]="currentStep === 1">
+      Anterior
+    </button>
+    <button class="btn-next" (click)="nextStep()" [disabled]="currentStep === totalSteps">
+      Siguiente
+    </button>
+  </div>
+</div> 
