@@ -32,8 +32,8 @@ export class AppComponent {
     },
     {
       number: 2,
-      title: 'Validación Biométrica',
-      description: 'Realice la validación biométrica del cliente'
+      title: 'Información del cliente',
+      description: 'Valide la información del cliente'
     },
     {
       number: 3,
