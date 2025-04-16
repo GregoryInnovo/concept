@@ -5,7 +5,7 @@ import { ConsultaGiroComponent } from '../../components/consulta-giro/consulta-g
 import { ValidacionBiometricaComponent } from '../../components/validacion-biometrica/validacion-biometrica.component';
 import { ValorGiroComponent } from '../../components/valor-giro/valor-giro.component';
 import { BeneficiarioGiroComponent } from '../../components/beneficiario-giro/beneficiario-giro.component';
-
+import { LayoutComponent } from '../../components/layout/layout.component';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -15,7 +15,8 @@ import { BeneficiarioGiroComponent } from '../../components/beneficiario-giro/be
     ConsultaGiroComponent, 
     ValidacionBiometricaComponent,
     ValorGiroComponent,
-    BeneficiarioGiroComponent
+    BeneficiarioGiroComponent,
+    LayoutComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

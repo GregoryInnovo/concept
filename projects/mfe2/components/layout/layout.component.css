@@ -1,0 +1,16 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  margin-left: 250px; /* Match the width of the drawer */
+  transition: margin-left 0.3s ease;
+}
+
+/* Add a class to be toggled with JavaScript when drawer is closed */
+:host-context(.drawer-closed) .main-content {
+  margin-left: 64px; /* Match the width of the closed drawer */
+} 

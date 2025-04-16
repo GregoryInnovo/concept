@@ -1,0 +1,32 @@
+<div class="drawer-container" [ngClass]="{'drawer-closed': !isOpen}">
+  <div class="drawer-header">
+    <div class="logo-container">
+      <div class="logo">C</div>
+      @if (isOpen) {
+        <img src="../../../assets/images/coomeva-logo.png" alt="logo" class="logo-text">
+      }
+    </div>
+    <button class="toggle-btn" (click)="toggleDrawer()">
+      @if (isOpen) {
+        <span class="material-icons">chevron_left</span>
+      } @else {
+        <span class="material-icons">chevron_right</span>
+      }
+    </button>
+  </div>
+  
+  <nav class="drawer-nav">
+    <ul>
+      @for (item of navItems; track $index) {
+        <li>
+          <a [routerLink]="item.route" routerLinkActive="active-link">
+            <span class="material-icons">{{item.icon}}</span>
+            @if (isOpen) {
+              <span class="nav-label">{{item.label}}</span>
+            }
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+</div> 
