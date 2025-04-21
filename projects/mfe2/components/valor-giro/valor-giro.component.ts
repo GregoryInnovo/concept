@@ -52,7 +52,19 @@ export class ValorGiroComponent {
     'Sucursal Sur'
   ];
 
-  constructor(private giroDataService: GiroDataService) {}
+  constructor(private giroDataService: GiroDataService) {
+    // Recuperar datos guardados si existen
+    const savedData = this.giroDataService.getGiroData();
+    if (savedData) {
+      this.valorGiro = savedData.valorGiro;
+      this.cuentaOrigen = savedData.cuentaOrigen;
+      this.oficinaPagoSeleccionada = savedData.nombreOficina;
+      // Calcular valores
+      this.valorTotal = +this.valorComision + +this.ivaComision + +this.gmfComision + +this.gmfIvaComision + savedData.valorGiro;
+      // Si hay datos guardados, emitimos que están listos
+      this.valorConfirmado.emit();
+    }
+  }
 
   confirmarValor() {
     if (this.valorGiro > 0 && this.cuentaOrigen && this.oficinaPagoSeleccionada) {
@@ -65,6 +77,9 @@ export class ValorGiroComponent {
           cuentaOrigen: this.cuentaOrigen,
           nombreOficina: this.oficinaPagoSeleccionada
         });
+        // Calcular valores
+        const valores = this.giroDataService.calcularValores(this.valorGiro);
+        this.giroDataService.updateGiroData(valores);
       }
       this.valorConfirmado.emit();
     } else {
@@ -72,8 +87,20 @@ export class ValorGiroComponent {
     }
   }
 
-  formatearValor(valor: string): string {
-    // Aquí se podría implementar la lógica de formateo de valores monetarios
-    return valor;
+  formatearValor(valor: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+    }).format(valor);
+  }
+
+  validateTotalValue(event: Event): void {
+    try {
+      const input = event.target as HTMLInputElement;
+      this.valorTotal = +this.valorComision + +this.ivaComision + +this.gmfComision + +this.gmfIvaComision + +input.value
+    } catch (error) {
+      throw error
+    }
   }
 }

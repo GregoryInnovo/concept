@@ -57,7 +57,7 @@ export class BeneficiarioGiroComponent implements OnInit {
         nombreCliente: savedData.nombreSolicitante,
         telefono: savedData.telefonoSolicitante,
         email: savedData.emailSolicitante,
-        valorTotalGiro: this.formatearMoneda(savedData.valorTotal),
+        valorTotalGiro: savedData.valorTotal,
         cuentaOrigen: savedData.cuentaOrigen
       };
 

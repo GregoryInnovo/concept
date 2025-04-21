@@ -54,10 +54,27 @@ export class ConsultaGiroComponent {
     }
   }
 
+  cleanFields(key: string): void {
+    try {
+      if (key === 'type') {
+        this.selectedTipoId = ''
+        this.consultaData = null
+        this.numeroIdentificacion = ''
+      }
+      if (key === 'typeDoc') {
+        this.consultaData = null
+        this.numeroIdentificacion = ''
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
   validateNumericInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(/[^0-9]/g, '');
     this.numeroIdentificacion = input.value;
+    this.consultaData = null
   }
 
   onBuscar(): void {
@@ -90,18 +107,14 @@ export class ConsultaGiroComponent {
         nombreSolicitante: this.consultaData.nombreCliente,
         telefonoSolicitante: this.consultaData.telefono,
         emailSolicitante: this.consultaData.email,
-        cuentaOrigen: '0206',
-        valorGiro: 250000,
-        codigoOficina: '901',
-        nombreOficina: 'Popayan',
+        cuentaOrigen: '',
+        valorGiro: 0,
+        codigoOficina: '',
+        nombreOficina: '',
         regional: 'Sur',
         cajero: 'LMDR4836',
         fechaEmision: new Date()
       });
-
-      // Calcular valores
-      const valores = this.giroDataService.calcularValores(250000);
-      this.giroDataService.updateGiroData(valores);
 
       this.isLoading = false;
       // Emitimos que los datos están listos
