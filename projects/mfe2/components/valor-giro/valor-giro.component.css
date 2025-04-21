@@ -159,3 +159,35 @@ select.form-control {
 .btn-aceptar:hover {
   background-color: #1565c0;
 }
+
+.comision-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.comision-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.comision-item:last-child {
+  border-bottom: none;
+}
+
+.comision-label {
+  color: #0066cc;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.comision-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}

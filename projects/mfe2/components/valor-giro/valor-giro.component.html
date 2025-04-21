@@ -34,10 +34,24 @@
     </div>
   </div>
 
-  <!-- Valor de la comisión -->
-  <div class="comision-section">
-    <label class="comision-label">VALOR DE LA COMISIÓN</label>
-    <div class="comision-value">${{valorComision}}</div>
+  <!-- Información de comisiones -->
+  <div class="comision-card">
+    <div class="comision-item">
+      <label class="comision-label">VALOR DE LA COMISIÓN</label>
+      <div class="comision-value">${{valorComision}}</div>
+    </div>
+    <div class="comision-item">
+      <label class="comision-label">I.V.A COMISIÓN</label>
+      <div class="comision-value">${{ivaComision}}</div>
+    </div>
+    <div class="comision-item">
+      <label class="comision-label">GMF DEL IVA DE LA COMISIÓN</label>
+      <div class="comision-value">${{gmfIvaComision}}</div>
+    </div>
+    <div class="comision-item">
+      <label class="comision-label">GMF DE LA COMISIÓN</label>
+      <div class="comision-value">${{gmfComision}}</div>
+    </div>
   </div>
 
   <!-- Formulario de valor y cuenta -->
@@ -60,6 +74,16 @@
       <select id="cuentaOrigen" [(ngModel)]="cuentaOrigen" class="form-control">
         @for (cuenta of cuentasDisponibles; track cuenta) {
           <option [value]="cuenta">{{cuenta}}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="oficinaPago">OFICINA DE PAGO</label>
+      <select id="oficinaPago" [(ngModel)]="oficinaPagoSeleccionada" class="form-control">
+        <option value="" disabled selected>Seleccione una oficina</option>
+        @for (oficina of oficinasPago; track oficina) {
+          <option [value]="oficina">{{oficina}}</option>
         }
       </select>
     </div>
