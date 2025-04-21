@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ClientDataService } from '../../services/client-data.service';
 
 @Component({
   selector: 'app-valor-giro',
@@ -9,15 +10,16 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './valor-giro.component.html',
   styleUrls: ['./valor-giro.component.css']
 })
-export class ValorGiroComponent {
+export class ValorGiroComponent implements OnInit {
   @Output() valorConfirmado = new EventEmitter<void>();
 
   clientData = {
-    tipoDocumento: 'CC',
-    numeroDocumento: '1019963258',
-    nombreCliente: 'Pepito Perez',
-    telefono: '311 2896300',
-    email: 'pepitoperez76@gmail.com'
+    tipoSolicitud: '',
+    tipoDocumento: '',
+    numeroDocumento: '',
+    nombreCliente: '',
+    telefono: '',
+    email: ''
   };
 
   valorGiro: string = '250.000,00';
@@ -30,6 +32,23 @@ export class ValorGiroComponent {
     '406531314',
     '406531315'
   ];
+
+  constructor(private clientDataService: ClientDataService) {}
+
+  ngOnInit() {
+    // Suscribirse a los cambios en los datos del cliente
+    this.clientDataService.clientData$.subscribe(data => {
+      if (data) {
+        this.clientData = data;
+      }
+    });
+
+    // Obtener datos iniciales si existen
+    const initialData = this.clientDataService.getClientData();
+    if (initialData) {
+      this.clientData = initialData;
+    }
+  }
 
   confirmarValor() {
     this.valorConfirmado.emit();

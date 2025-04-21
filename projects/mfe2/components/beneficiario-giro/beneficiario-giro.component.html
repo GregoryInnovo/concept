@@ -52,8 +52,10 @@
       <select 
         id="tipoDoc" 
         [(ngModel)]="beneficiarioData.tipoDocumento" 
-        class="form-control">
-        @for (tipo of tiposDocumento; track tipo) {
+        class="form-control"
+        required>
+        <option value="" disabled selected>Seleccione tipo de documento</option>
+        @for (tipo of tiposDocumentoBeneficiario; track tipo) {
           <option [value]="tipo">{{tipo}}</option>
         }
       </select>
@@ -66,7 +68,12 @@
         id="numDoc" 
         [(ngModel)]="beneficiarioData.numeroDocumento" 
         class="form-control"
-        placeholder="Ingrese número de documento">
+        maxlength="10"
+        minlength="5"
+        pattern="[0-9]*"
+        placeholder="Ingrese número de documento"
+        (input)="validateNumericInput($event)"
+        required>
     </div>
 
     <div class="form-group">
@@ -76,7 +83,53 @@
         id="nombre" 
         [(ngModel)]="beneficiarioData.nombreCliente" 
         class="form-control"
-        placeholder="Ingrese nombre del beneficiario">
+        maxlength="20"
+        placeholder="Ingrese nombre del beneficiario"
+        (input)="validateNombreInput($event)"
+        required>
+    </div>
+  </div>
+
+  <!-- Formulario del autorizado -->
+  <div class="beneficiario-section">
+    <h3 class="section-title">INFORMACIÓN AUTORIZADO</h3>
+    
+    <div class="form-group">
+      <label for="tipoDocAutorizado">TIPO IDENTIFICACIÓN</label>
+      <select 
+        id="tipoDocAutorizado" 
+        [(ngModel)]="autorizadoData.tipoDocumento" 
+        class="form-control">
+        <option value="" disabled selected>Seleccione tipo de documento</option>
+        @for (tipo of tiposDocumentoAutorizado; track tipo) {
+          <option [value]="tipo">{{tipo}}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="numDocAutorizado">NÚMERO IDENTIFICACIÓN</label>
+      <input 
+        type="text" 
+        id="numDocAutorizado" 
+        [(ngModel)]="autorizadoData.numeroDocumento" 
+        class="form-control"
+        maxlength="10"
+        minlength="5"
+        placeholder="Ingrese número de documento"
+        (input)="validateAlphanumericInput($event)">
+    </div>
+
+    <div class="form-group">
+      <label for="nombreAutorizado">NOMBRE AUTORIZADO</label>
+      <input 
+        type="text" 
+        id="nombreAutorizado" 
+        [(ngModel)]="autorizadoData.nombreAutorizado" 
+        class="form-control"
+        maxlength="20"
+        placeholder="Ingrese nombre del autorizado"
+        (input)="validateNombreInput($event)">
     </div>
   </div>
 

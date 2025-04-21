@@ -1,32 +1,35 @@
 <div class="valor-giro-container">
   <!-- Información del cliente -->
   <div class="client-info-section">
-    <div class="info-row">
+    <div class="info-grid">
+      <!-- Row 1 -->
+      <div class="info-group">
+        <label>TIPO SOLICITUD</label>
+        <div class="info-value">{{clientData?.tipoSolicitud}}</div>
+      </div>
       <div class="info-group">
         <label>TIPO DOCUMENTO</label>
-        <div class="info-value">{{clientData.tipoDocumento}}</div>
+        <div class="info-value">{{clientData?.tipoDocumento}}</div>
       </div>
+
+      <!-- Row 2 -->
       <div class="info-group">
         <label>NÚMERO DOCUMENTO</label>
-        <div class="info-value">{{clientData.numeroDocumento}}</div>
+        <div class="info-value">{{clientData?.numeroDocumento}}</div>
       </div>
-    </div>
-
-    <div class="info-row">
       <div class="info-group">
         <label>NOMBRE CLIENTE</label>
-        <div class="info-value">{{clientData.nombreCliente}}</div>
+        <div class="info-value">{{clientData?.nombreCliente}}</div>
       </div>
-    </div>
 
-    <div class="info-row">
+      <!-- Row 3 -->
       <div class="info-group">
         <label>TELÉFONO</label>
-        <div class="info-value">{{clientData.telefono}}</div>
+        <div class="info-value">{{clientData?.telefono}}</div>
       </div>
       <div class="info-group">
         <label>MAIL</label>
-        <div class="info-value">{{clientData.email}}</div>
+        <div class="info-value">{{clientData?.email}}</div>
       </div>
     </div>
   </div>

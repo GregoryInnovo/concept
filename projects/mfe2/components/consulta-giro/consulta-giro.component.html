@@ -1,9 +1,20 @@
 <div class="consulta-container">
-  <h2>EMISIÓN GIRO</h2>
+  <h2>EMISIÓN GIROS</h2>
   <div class="consulta-form">
+    <div class="form-group">
+      <label for="tipoSolicitud">TIPO SOLICITUD</label>
+      <select id="tipoSolicitud" [(ngModel)]="selectedTipoSolicitud" class="form-control" required>
+        <option value="" disabled selected>Seleccione tipo de solicitud</option>
+        @for (tipo of tiposSolicitud; track tipo) {
+          <option [value]="tipo">{{tipo}}</option>
+        }
+      </select>
+    </div>
+
     <div class="form-group">
       <label for="tipoId">TIPO IDENTIFICACIÓN CLIENTE</label>
       <select id="tipoId" [(ngModel)]="selectedTipoId" class="form-control">
+        <option value="" disabled selected>Seleccione tipo de identificación</option>
         @for (tipo of tiposIdentificacion; track tipo) {
           <option [value]="tipo">{{tipo}}</option>
         }
@@ -17,9 +28,40 @@
         id="numId" 
         [(ngModel)]="numeroIdentificacion" 
         class="form-control"
-        placeholder="Ingrese número de identificación">
+        maxlength="10"
+        pattern="[0-9]*"
+        placeholder="Ingrese número de identificación"
+        (input)="validateNumericInput($event)">
     </div>
 
     <button class="btn-buscar" (click)="onBuscar()">BUSCAR</button>
   </div>
+
+  <!-- Loading Spinner -->
+  @if (isLoading) {
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Cargando información del cliente...</p>
+    </div>
+  }
+
+  <!-- Client Information Section -->
+  @if (clientData && !isLoading) {
+    <div class="client-info">
+      <div class="info-group">
+        <label>NOMBRE CLIENTE</label>
+        <div class="info-value">{{clientData?.nombreCliente}}</div>
+      </div>
+      
+      <div class="info-group">
+        <label>TELÉFONO</label>
+        <div class="info-value">{{clientData?.telefono}}</div>
+      </div>
+      
+      <div class="info-group">
+        <label>MAIL</label>
+        <div class="info-value">{{clientData?.email}}</div>
+      </div>
+    </div>
+  }
 </div>
