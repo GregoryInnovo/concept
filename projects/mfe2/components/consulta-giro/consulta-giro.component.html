@@ -46,21 +46,21 @@
   }
 
   <!-- Client Information Section -->
-  @if (clientData && !isLoading) {
+  @if (consultaData && !isLoading) {
     <div class="client-info">
       <div class="info-group">
         <label>NOMBRE CLIENTE</label>
-        <div class="info-value">{{clientData?.nombreCliente}}</div>
+        <div class="info-value">{{consultaData.nombreCliente}}</div>
       </div>
       
       <div class="info-group">
         <label>TELÉFONO</label>
-        <div class="info-value">{{clientData?.telefono}}</div>
+        <div class="info-value">{{consultaData.telefono}}</div>
       </div>
       
       <div class="info-group">
         <label>MAIL</label>
-        <div class="info-value">{{clientData?.email}}</div>
+        <div class="info-value">{{consultaData.email}}</div>
       </div>
     </div>
   }

@@ -1,0 +1,161 @@
+:host {
+  display: block;
+  padding: 2rem;
+}
+
+.main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.stepper-container {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.stepper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  position: relative;
+  width: 100%;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 1.25rem;
+    left: 2.5rem;
+    right: 2.5rem;
+    height: 2px;
+    background-color: #e0e0e0;
+    z-index: 1;
+  }
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 1rem;
+  background: white;
+  padding: 0 1rem;
+  max-width: 33.33%;
+
+  &.active {
+    .step-number {
+      background-color: #1976d2;
+      color: white;
+    }
+    .step-title {
+      color: #1976d2;
+    }
+  }
+
+  &.completed {
+    .step-number {
+      background-color: #4caf50;
+      color: white;
+    }
+    .step-title {
+      color: #4caf50;
+    }
+  }
+}
+
+.step-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #757575;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.step-content {
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+}
+
+.step-title {
+  font-weight: 500;
+  color: #757575;
+  margin-bottom: 0.25rem;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.step-description {
+  font-size: 0.875rem;
+  color: #9e9e9e;
+  white-space: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.step-content-container {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  margin: 2rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+
+    &:first-child {
+      background-color: #f5f5f5;
+      color: #757575;
+
+      &:hover:not(:disabled) {
+        background-color: #e0e0e0;
+      }
+    }
+
+    &:last-child {
+      background-color: #1976d2;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #1565c0;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+} 

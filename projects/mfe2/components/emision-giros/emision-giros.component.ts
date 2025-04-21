@@ -4,7 +4,7 @@ import { ConsultaGiroComponent } from '../consulta-giro/consulta-giro.component'
 import { ValidacionBiometricaComponent } from '../validacion-biometrica/validacion-biometrica.component';
 import { ValorGiroComponent } from '../valor-giro/valor-giro.component';
 import { BeneficiarioGiroComponent } from '../beneficiario-giro/beneficiario-giro.component';
-import { ClientDataService } from '../../services/client-data.service';
+import { GiroDataService } from '../../services/giro-data.service';
 
 @Component({
   selector: 'app-emision-giros',
@@ -22,6 +22,7 @@ import { ClientDataService } from '../../services/client-data.service';
 export class EmisionGirosComponent {
   currentStep = 1;
   totalSteps = 3;
+  pasoConsultaCompleto = false;
 
   steps = [
     {
@@ -41,7 +42,7 @@ export class EmisionGirosComponent {
     }
   ];
 
-  constructor(private clientDataService: ClientDataService) {}
+  constructor(public giroDataService: GiroDataService) {}
 
   isStepActive(step: number): boolean {
     return this.currentStep === step;
@@ -51,18 +52,18 @@ export class EmisionGirosComponent {
     return this.currentStep > step;
   }
 
+  actualizarEstadoPaso(datosListos: boolean) {
+    this.pasoConsultaCompleto = datosListos;
+  }
+
   canProceedToNextStep(): boolean {
-    const clientData = this.clientDataService.getClientData();
-    
     switch (this.currentStep) {
       case 1:
-        // Validar que existan datos del cliente
-        return clientData !== null;
+        return this.pasoConsultaCompleto;
       case 2:
-        // Aquí podrías agregar validaciones específicas para el valor del giro
-        return true;
+        const giroData = this.giroDataService.getGiroData();
+        return giroData && giroData.valorGiro ? giroData.valorGiro > 0 : false;
       case 3:
-        // Aquí podrías agregar validaciones específicas para el beneficiario
         return true;
       default:
         return false;

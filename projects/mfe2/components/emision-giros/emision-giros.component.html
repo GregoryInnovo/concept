@@ -3,7 +3,6 @@
   
   <div class="stepper-container">
     <div class="step-connector"></div>
-    
     @for (step of steps; track step.number) {
       <div class="step" [class.active]="isStepActive(step.number)" [class.completed]="isStepCompleted(step.number)">
         <div class="step-number">{{step.number}}</div>
@@ -15,26 +14,24 @@
 
   <div class="step-content">
     @if (currentStep === 1) {
-      <app-consulta-giro />
+      <app-consulta-giro (datosListos)="actualizarEstadoPaso($event)"></app-consulta-giro>
     }
     @if (currentStep === 2) {
-      <app-valor-giro (valorConfirmado)="nextStep()" />
+      <app-valor-giro 
+        [clientData]="giroDataService.getGiroData()"
+        (valorConfirmado)="nextStep()">
+      </app-valor-giro>
     }
     @if (currentStep === 3) {
       <app-beneficiario-giro 
-        (beneficiarioConfirmado)="nextStep()" 
-        (reiniciarProceso)="currentStep = 1" />
+        (beneficiarioConfirmado)="nextStep()"
+        (reiniciarProceso)="currentStep = 1">
+      </app-beneficiario-giro>
     }
   </div>
 
   <div class="navigation-buttons">
-    <button class="btn-previous" (click)="previousStep()" [disabled]="currentStep === 1">
-      Anterior
-    </button>
-    <button class="btn-next" 
-            (click)="nextStep()" 
-            [disabled]="currentStep === totalSteps || !canProceedToNextStep()">
-      Siguiente
-    </button>
+    <button class="btn-previous" (click)="previousStep()" [disabled]="currentStep === 1">Anterior</button>
+    <button class="btn-next" (click)="nextStep()" [disabled]="!canProceedToNextStep()">Siguiente</button>
   </div>
 </div> 

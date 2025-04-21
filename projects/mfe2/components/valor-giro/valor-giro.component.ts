@@ -1,7 +1,23 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ClientDataService } from '../../services/client-data.service';
+import { GiroDataService } from '../../services/giro-data.service';
+
+interface GiroData {
+  tipoSolicitud: string;
+  tipoDocumentoSolicitante: string;
+  numeroDocumentoSolicitante: string;
+  nombreSolicitante: string;
+  telefonoSolicitante: string;
+  emailSolicitante: string;
+  cuentaOrigen?: string;
+  valorGiro?: number;
+  codigoOficina?: string;
+  nombreOficina?: string;
+  regional?: string;
+  cajero?: string;
+  fechaEmision?: Date;
+}
 
 @Component({
   selector: 'app-valor-giro',
@@ -10,124 +26,50 @@ import { ClientDataService } from '../../services/client-data.service';
   templateUrl: './valor-giro.component.html',
   styleUrls: ['./valor-giro.component.css']
 })
-export class ValorGiroComponent implements OnInit {
+export class ValorGiroComponent {
+  @Input() clientData: GiroData | null = null;
   @Output() valorConfirmado = new EventEmitter<void>();
 
-  clientData = {
-    tipoSolicitud: '',
-    tipoDocumento: '',
-    numeroDocumento: '',
-    nombreCliente: '',
-    telefono: '',
-    email: ''
-  };
-
-  valorGiro: string = '25000000';
-  cuentaOrigen: string = '406531313';
-  valorComision: string = '20.000,00';
-  ivaComision: string = '3.800,00';
-  gmfIvaComision: string = '15,20';
-  gmfComision: string = '80,00';
-  valorTotal: string = '282.150,00';
-  oficinasPago: string[] = [
-    'Oficina Santa Barbara',
-    'Oficina Galerias', 
-    'Oficina Avenida Chile',
-    'Oficina Niza',
-    'Oficina Centro Internacional',
-    'Oficina Unicentro Bogota',
-    'Oficina Ciudad Salitre',
-    'Oficina Calle 80 Bogota', 
-    'Oficina Principal Bogota',
-    'Oficna Plaza de las Américas',
-    'Oficna Cedritos',
-    'Oficina Chapinero',
-    'Oficina Sogamoso',
-    'Oficina Villavicencio',
-    'Oficina Tunja',
-    'Oficina Yopal',
-    'Oficina Chia',
-    'Oficina Duitama',
-    'Buga',
-    'Oficina Buenaventura',
-    'Oficina Sur Cali',
-    'Oficina Centro Cali', 
-    'Oficina Sede Nacional Cali',
-    'Oficina Imbanaco Cali',
-    'Oficina Unicentro Cali',
-    'Oficina Chipichape Cali',
-    'Oficina Cosmocentro Cali',
-    'Oficina Liviana Farallones Cali',
-    'Oficina Florencia',
-    'Oficina Ibague',
-    'Oficina Neiva',
-    'Oficina Popayan',
-    'Oficina Pasto',
-    'Oficina Tulua',
-    'Oficina Prado Barranquilla',
-    'Oficina Barranquilla Norte',
-    'Oficina Calle 93 Barranquilla',
-    'Oficina Unico Barranquilla',
-    'Oficina Valledupar',
-    'Oficina Manga Cartagena', 
-    'Oficina Santa Marta',
-    'Oficina Sincelejo',
-    'Oficina Riohacha',
-    'Oficina Cartago',
-    'Oficina Manizales Centro',
-    'Oficina Armenia Centro',
-    'Oficina Manizales El Cable',
-    'Oficina Pereira Centro',
-    'Oficina Prometeo',
-    'Oficina Armenia Norte',
-    'Oficina Barrancabermeja',
-    'Oficina Bucaramanga',
-    'Oficina Cucuta',
-    'Oficina Envigado',
-    'Oficina Mayorca',
-    'Oficina Ayacucho Medellin',
-    'Oficina Oviedo Medellin',
-    'Oficina Las Americas Medellin',
-    'Oficina La 33 Medellin',
-    'Oficina Monteria',
-    'Oficina Pamplona', 
-    'Oficina Quibdo',
-    'Oficina Rionegro',
-    'Oficina Apartado',
-    'Oficina Floridablanca',
-    'Oficina Centro Palmira',
-    'Oficina Versalles Palmira',
-    'Oficina Llanogrande Palmira',
-    'Banca Express',
-    'Oficina Virtual'
-  ];
+  valorGiro: number = 0;
+  cuentaOrigen: string = '';
   oficinaPagoSeleccionada: string = '';
 
+  // Valores calculados
+  valorComision: number = 0;
+  ivaComision: number = 0;
+  gmfComision: number = 0;
+  gmfIvaComision: number = 0;
+  valorTotal: number = 0;
+
   cuentasDisponibles = [
-    '406531313',
-    '406531314',
-    '406531315'
+    '1234 - Cuenta Corriente',
+    '5678 - Cuenta de Ahorros'
   ];
 
-  constructor(private clientDataService: ClientDataService) {}
+  oficinasPago = [
+    'Oficina Principal',
+    'Sucursal Norte',
+    'Sucursal Sur'
+  ];
 
-  ngOnInit() {
-    // Suscribirse a los cambios en los datos del cliente
-    this.clientDataService.clientData$.subscribe(data => {
-      if (data) {
-        this.clientData = data;
-      }
-    });
-
-    // Obtener datos iniciales si existen
-    const initialData = this.clientDataService.getClientData();
-    if (initialData) {
-      this.clientData = initialData;
-    }
-  }
+  constructor(private giroDataService: GiroDataService) {}
 
   confirmarValor() {
-    this.valorConfirmado.emit();
+    if (this.valorGiro > 0 && this.cuentaOrigen && this.oficinaPagoSeleccionada) {
+      // Actualizar los datos del giro
+      const currentData = this.giroDataService.getGiroData();
+      if (currentData) {
+        this.giroDataService.updateGiroData({
+          ...currentData,
+          valorGiro: this.valorGiro,
+          cuentaOrigen: this.cuentaOrigen,
+          nombreOficina: this.oficinaPagoSeleccionada
+        });
+      }
+      this.valorConfirmado.emit();
+    } else {
+      alert('Por favor complete todos los campos requeridos');
+    }
   }
 
   formatearValor(valor: string): string {

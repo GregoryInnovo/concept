@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ComprobanteGiroComponent } from '../comprobante-giro/comprobante-giro.component';
+import { GiroDataService } from '../../services/giro-data.service';
 
 @Component({
   selector: 'app-beneficiario-giro',
@@ -10,21 +11,12 @@ import { ComprobanteGiroComponent } from '../comprobante-giro/comprobante-giro.c
   templateUrl: './beneficiario-giro.component.html',
   styleUrls: ['./beneficiario-giro.component.css']
 })
-export class BeneficiarioGiroComponent {
+export class BeneficiarioGiroComponent implements OnInit {
   @Output() beneficiarioConfirmado = new EventEmitter<void>();
   @Output() reiniciarProceso = new EventEmitter<void>();
 
   showComprobante = false;
-
-  clienteData = {
-    tipoDocumento: 'CC',
-    numeroDocumento: '1019963258',
-    nombreCliente: 'Pepito Perez',
-    telefono: '311 2896300',
-    email: 'pepitoperez76@gmail.com',
-    valorTotalGiro: '282.150,00',
-    cuentaOrigen: '406531313'
-  };
+  solicitanteData: any = null;
 
   beneficiarioData = {
     tipoDocumento: '',
@@ -52,6 +44,46 @@ export class BeneficiarioGiroComponent {
     'PPT - PERMISO POR PROTECCIÓN TEMPORAL',
     'NIT - NUMERO DE IDENTIFICACION TRIBUTARIA'
   ];
+
+  constructor(private giroDataService: GiroDataService) {}
+
+  ngOnInit() {
+    const savedData = this.giroDataService.getGiroData();
+    if (savedData) {
+      // Guardar datos del solicitante para mostrar en el resumen
+      this.solicitanteData = {
+        tipoDocumento: savedData.tipoDocumentoSolicitante,
+        numeroDocumento: savedData.numeroDocumentoSolicitante,
+        nombreCliente: savedData.nombreSolicitante,
+        telefono: savedData.telefonoSolicitante,
+        email: savedData.emailSolicitante,
+        valorTotalGiro: this.formatearMoneda(savedData.valorTotal),
+        cuentaOrigen: savedData.cuentaOrigen
+      };
+
+      if (savedData.tipoDocumentoBeneficiario) {
+        this.beneficiarioData = {
+          tipoDocumento: savedData.tipoDocumentoBeneficiario,
+          numeroDocumento: savedData.numeroDocumentoBeneficiario,
+          nombreCliente: savedData.nombreBeneficiario
+        };
+      }
+      if (savedData.tipoDocumentoAutorizado) {
+        this.autorizadoData = {
+          tipoDocumento: savedData.tipoDocumentoAutorizado,
+          numeroDocumento: savedData.numeroDocumentoAutorizado || '',
+          nombreAutorizado: savedData.nombreAutorizado || ''
+        };
+      }
+    }
+  }
+
+  formatearMoneda(valor: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(valor);
+  }
 
   validateNumericInput(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -125,6 +157,17 @@ export class BeneficiarioGiroComponent {
         return;
       }
     }
+
+    // Actualizar datos del giro
+    this.giroDataService.updateGiroData({
+      tipoDocumentoBeneficiario: this.beneficiarioData.tipoDocumento,
+      numeroDocumentoBeneficiario: this.beneficiarioData.numeroDocumento,
+      nombreBeneficiario: this.beneficiarioData.nombreCliente,
+      tipoDocumentoAutorizado: this.autorizadoData.tipoDocumento || undefined,
+      numeroDocumentoAutorizado: this.autorizadoData.numeroDocumento || undefined,
+      nombreAutorizado: this.autorizadoData.nombreAutorizado || undefined,
+      numeroGiro: Math.floor(Math.random() * 1000000).toString().padStart(6, '0')
+    });
 
     this.showComprobante = true;
   }

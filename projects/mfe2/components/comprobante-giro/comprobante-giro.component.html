@@ -1,12 +1,12 @@
 <div class="modal-overlay">
   <div class="modal-content">
     <button class="btn-cerrar" (click)="aceptar()" aria-label="Cerrar">×</button>
-    <div class="comprobante">
+    <div class="comprobante" *ngIf="datosComprobante">
       <h2 class="titulo">COMPROBANTE EMISION DE GIROS</h2>
       
       <div class="fecha-hora">
-        <div>Fecha de emisión: {{datosComprobante.fecha}}</div>
-        <div>Hora: {{datosComprobante.hora}}</div>
+        <div>Fecha de emisión: {{formatearFecha(datosComprobante.fechaEmision)}}</div>
+        <div>Hora: {{formatearHora(datosComprobante.fechaEmision)}}</div>
       </div>
 
       <div class="info-grid">
@@ -17,7 +17,7 @@
 
         <div class="info-row">
           <div class="label">Oficina</div>
-          <div class="value">{{datosComprobante.oficina}}</div>
+          <div class="value">{{obtenerOficinaCompleta()}}</div>
         </div>
 
         <div class="info-row">
@@ -26,13 +26,18 @@
         </div>
 
         <div class="info-row">
-          <div class="label">Identificación del beneficiario</div>
-          <div class="value">{{datosComprobante.identificacionBeneficiario}}</div>
+          <div class="label">Cuenta Origen</div>
+          <div class="value">{{datosComprobante.cuentaOrigen}}</div>
         </div>
 
         <div class="info-row">
-          <div class="label">Nombre del beneficiario</div>
-          <div class="value">{{datosComprobante.nombreBeneficiario}}</div>
+          <div class="label">Solicitante</div>
+          <div class="value">{{datosComprobante.nombreSolicitante}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Identificación del solicitante</div>
+          <div class="value">{{datosComprobante.tipoDocumentoSolicitante}} {{datosComprobante.numeroDocumentoSolicitante}}</div>
         </div>
 
         <div class="info-row">
@@ -42,7 +47,7 @@
 
         <div class="info-row">
           <div class="label">Comisiones</div>
-          <div class="value">{{formatearMoneda(datosComprobante.comisiones)}}</div>
+          <div class="value">{{formatearMoneda(datosComprobante.comision)}}</div>
         </div>
 
         <div class="info-row">
@@ -64,6 +69,28 @@
           <div class="label">Total a pagar</div>
           <div class="value">{{formatearMoneda(datosComprobante.valorTotal)}}</div>
         </div>
+
+        <div class="info-row">
+          <div class="label">Identificación del beneficiario</div>
+          <div class="value">{{datosComprobante.tipoDocumentoBeneficiario}} {{datosComprobante.numeroDocumentoBeneficiario}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="label">Nombre del beneficiario</div>
+          <div class="value">{{datosComprobante.nombreBeneficiario}}</div>
+        </div>
+
+        <ng-container *ngIf="datosComprobante.nombreAutorizado">
+          <div class="info-row">
+            <div class="label">Identificación del autorizado</div>
+            <div class="value">{{datosComprobante.tipoDocumentoAutorizado}} {{datosComprobante.numeroDocumentoAutorizado}}</div>
+          </div>
+
+          <div class="info-row">
+            <div class="label">Nombre del autorizado</div>
+            <div class="value">{{datosComprobante.nombreAutorizado}}</div>
+          </div>
+        </ng-container>
       </div>
 
       <div class="notas">
@@ -72,9 +99,9 @@
         <p>Por favor, verifique que la información correspondiente al titular, cuenta y valor sean correctos.</p>
       </div>
 
-      <div class="email-info" *ngIf="datosComprobante.email">
+      <div class="email-info" *ngIf="datosComprobante.emailSolicitante">
         <p>En constancia de lo anterior se envía comprobante a la cuenta de correo:</p>
-        <p class="email">{{datosComprobante.email}}</p>
+        <p class="email">{{datosComprobante.emailSolicitante}}</p>
       </div>
 
       <div class="button-container">

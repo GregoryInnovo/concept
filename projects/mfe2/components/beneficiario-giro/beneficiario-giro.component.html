@@ -1,44 +1,44 @@
 <div class="beneficiario-container">
   <!-- Información del cliente y giro -->
-  <div class="info-section">
+  <div class="info-section" *ngIf="solicitanteData">
     <h3 class="section-title">RESUMEN</h3>
     <div class="info-row">
       <div class="info-group">
         <label>TIPO DOCUMENTO</label>
-        <div class="info-value">{{clienteData.tipoDocumento}}</div>
+        <div class="info-value">{{solicitanteData.tipoDocumento}}</div>
       </div>
       <div class="info-group">
         <label>NÚMERO DOCUMENTO</label>
-        <div class="info-value">{{clienteData.numeroDocumento}}</div>
+        <div class="info-value">{{solicitanteData.numeroDocumento}}</div>
       </div>
     </div>
 
     <div class="info-row">
       <div class="info-group">
         <label>NOMBRE CLIENTE</label>
-        <div class="info-value">{{clienteData.nombreCliente}}</div>
+        <div class="info-value">{{solicitanteData.nombreCliente}}</div>
       </div>
     </div>
 
     <div class="info-row">
       <div class="info-group">
         <label>TELÉFONO</label>
-        <div class="info-value">{{clienteData.telefono}}</div>
+        <div class="info-value">{{solicitanteData.telefono}}</div>
       </div>
       <div class="info-group">
         <label>MAIL</label>
-        <div class="info-value">{{clienteData.email}}</div>
+        <div class="info-value">{{solicitanteData.email}}</div>
       </div>
     </div>
 
     <div class="info-row">
       <div class="info-group">
         <label>VALOR TOTAL DEL GIRO</label>
-        <div class="info-value">$ {{clienteData.valorTotalGiro}}</div>
+        <div class="info-value">$ {{solicitanteData.valorTotalGiro}}</div>
       </div>
       <div class="info-group">
         <label>CUENTA ORIGEN</label>
-        <div class="info-value">{{clienteData.cuentaOrigen}}</div>
+        <div class="info-value">{{solicitanteData.cuentaOrigen}}</div>
       </div>
     </div>
   </div>

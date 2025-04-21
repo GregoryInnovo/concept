@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { GiroDataService, GiroData } from '../../services/giro-data.service';
 
 @Component({
   selector: 'app-comprobante-giro',
@@ -8,40 +9,25 @@ import { CommonModule } from '@angular/common';
   templateUrl: './comprobante-giro.component.html',
   styleUrls: ['./comprobante-giro.component.css']
 })
-export class ComprobanteGiroComponent {
+export class ComprobanteGiroComponent implements OnInit {
   @Output() cerrarComprobante = new EventEmitter<void>();
 
-  datosComprobante = {
-    fecha: this.formatearFecha(new Date()),
-    hora: this.formatearHora(new Date()),
-    numeroGiro: '123533',
-    codigoOficina: '901',
-    nombreOficina: 'Popayan',
-    regional: 'Sur',
-    oficina: '901 Popayan - Sur',
-    cajero: 'LMDR4836',
-    numeroCuenta: '0206',
-    solicitante: 'COOPERATIVA MULTIACT',
-    identificacionSolicitante: 'NIT 891502999',
-    valorGiro: 250000,
-    comisiones: 20000,
-    ivaComision: 3800,
-    gmfComision: 80,
-    gmfIva: 15.2,
-    valorTotal: 273895.2,
-    identificacionBeneficiario: 'CC 51896412',
-    nombreBeneficiario: 'MARIA MORALES',
-    email: 'pepitoperez76@gmail.com'
-  };
+  datosComprobante: GiroData | null = null;
 
-  private formatearFecha(fecha: Date): string {
+  constructor(private giroDataService: GiroDataService) {}
+
+  ngOnInit() {
+    this.datosComprobante = this.giroDataService.getGiroData();
+  }
+
+  formatearFecha(fecha: Date): string {
     const year = fecha.getFullYear();
     const month = String(fecha.getMonth() + 1).padStart(2, '0');
     const day = String(fecha.getDate()).padStart(2, '0');
     return `${year}/${month}/${day}`;
   }
 
-  private formatearHora(fecha: Date): string {
+  formatearHora(fecha: Date): string {
     return fecha.toLocaleTimeString('es-CO', {
       hour: '2-digit',
       minute: '2-digit',
@@ -59,7 +45,13 @@ export class ComprobanteGiroComponent {
     }).format(valor);
   }
 
+  obtenerOficinaCompleta(): string {
+    if (!this.datosComprobante) return '';
+    return `${this.datosComprobante.codigoOficina} ${this.datosComprobante.nombreOficina} - ${this.datosComprobante.regional}`;
+  }
+
   aceptar() {
+    this.giroDataService.clearGiroData();
     this.cerrarComprobante.emit();
   }
 }

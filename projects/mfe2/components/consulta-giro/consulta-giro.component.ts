@@ -1,7 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ClientDataService, ClientData } from '../../services/client-data.service';
+import { GiroDataService } from '../../services/giro-data.service';
+
+interface ConsultaData {
+  nombreCliente: string;
+  telefono: string;
+  email: string;
+}
 
 @Component({
   selector: 'app-consulta-giro',
@@ -11,11 +17,13 @@ import { ClientDataService, ClientData } from '../../services/client-data.servic
   styleUrls: ['./consulta-giro.component.css']
 })
 export class ConsultaGiroComponent {
+  @Output() datosListos = new EventEmitter<boolean>();
+
   selectedTipoId: string = '';
   selectedTipoSolicitud: string = '';
   numeroIdentificacion: string = '';
   isLoading: boolean = false;
-  clientData: ClientData | null = null;
+  consultaData: ConsultaData | null = null;
 
   tiposSolicitud = [
     'P - GIRO',
@@ -29,14 +37,20 @@ export class ConsultaGiroComponent {
     'NIT - EMPRESA'
   ];
 
-  constructor(private clientDataService: ClientDataService) {
+  constructor(private giroDataService: GiroDataService) {
     // Recuperar datos guardados si existen
-    const savedData = this.clientDataService.getClientData();
+    const savedData = this.giroDataService.getGiroData();
     if (savedData) {
-      this.clientData = savedData;
-      this.selectedTipoId = savedData.tipoDocumento;
+      this.selectedTipoId = savedData.tipoDocumentoSolicitante;
       this.selectedTipoSolicitud = savedData.tipoSolicitud;
-      this.numeroIdentificacion = savedData.numeroDocumento;
+      this.numeroIdentificacion = savedData.numeroDocumentoSolicitante;
+      this.consultaData = {
+        nombreCliente: savedData.nombreSolicitante,
+        telefono: savedData.telefonoSolicitante,
+        email: savedData.emailSolicitante
+      };
+      // Si hay datos guardados, emitimos que están listos
+      this.datosListos.emit(true);
     }
   }
 
@@ -58,22 +72,40 @@ export class ConsultaGiroComponent {
     }
 
     this.isLoading = true;
-    this.clientData = null;
+    this.consultaData = null;
+    this.datosListos.emit(false);
 
     // Simulando una llamada a API con setTimeout
     setTimeout(() => {
-      const clientData: ClientData = {
-        tipoSolicitud: this.selectedTipoSolicitud,
-        tipoDocumento: this.selectedTipoId,
-        numeroDocumento: this.numeroIdentificacion,
+      this.consultaData = {
         nombreCliente: 'JUAN PÉREZ GONZÁLEZ',
         telefono: '3001234567',
         email: 'juan.perez@example.com'
       };
-      
-      this.clientData = clientData;
-      this.clientDataService.updateClientData(clientData);
+
+      this.giroDataService.updateGiroData({
+        tipoSolicitud: this.selectedTipoSolicitud,
+        tipoDocumentoSolicitante: this.selectedTipoId,
+        numeroDocumentoSolicitante: this.numeroIdentificacion,
+        nombreSolicitante: this.consultaData.nombreCliente,
+        telefonoSolicitante: this.consultaData.telefono,
+        emailSolicitante: this.consultaData.email,
+        cuentaOrigen: '0206',
+        valorGiro: 250000,
+        codigoOficina: '901',
+        nombreOficina: 'Popayan',
+        regional: 'Sur',
+        cajero: 'LMDR4836',
+        fechaEmision: new Date()
+      });
+
+      // Calcular valores
+      const valores = this.giroDataService.calcularValores(250000);
+      this.giroDataService.updateGiroData(valores);
+
       this.isLoading = false;
+      // Emitimos que los datos están listos
+      this.datosListos.emit(true);
     }, 1500);
   }
 }
