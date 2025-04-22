@@ -19,9 +19,9 @@ interface ConsultaData {
 export class ConsultaGiroComponent {
   @Output() datosListos = new EventEmitter<boolean>();
 
-  selectedTipoId: string = '';
-  selectedTipoSolicitud: string = '';
-  numeroIdentificacion: string = '';
+  selectedTipoId: string = 'CC - CEDULA DE CIUDADANIA';
+  selectedTipoSolicitud: string = 'P - GIRO';
+  numeroIdentificacion: string = '23234311';
   isLoading: boolean = false;
   consultaData: ConsultaData | null = null;
 
@@ -65,6 +65,8 @@ export class ConsultaGiroComponent {
         this.consultaData = null
         this.numeroIdentificacion = ''
       }
+      // Si cambia alguno de los valores como tipo de identificación o tipo de solicitud, se actualiza el estado de los datos
+      this.datosListos.emit(false); // evita que se emita true cuando se cambia el tipo de identificación o tipo de solicitud
     } catch (error) {
       throw error
     }
@@ -119,6 +121,7 @@ export class ConsultaGiroComponent {
       this.isLoading = false;
       // Emitimos que los datos están listos
       this.datosListos.emit(true);
-    }, 1500);
+    // }, 1500);
+    }, 0);
   }
 }

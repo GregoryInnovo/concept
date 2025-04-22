@@ -19,7 +19,7 @@
     @if (currentStep === 2) {
       <app-valor-giro 
         [clientData]="giroDataService.getGiroData()"
-        (valorConfirmado)="nextStep()">
+        (valorConfirmado)="actualizarEstadoPaso($event)">
       </app-valor-giro>
     }
     @if (currentStep === 3) {

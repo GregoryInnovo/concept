@@ -5,52 +5,34 @@
       <!-- Row 1 -->
       <div class="info-group">
         <label>TIPO SOLICITUD</label>
-        <div class="info-value">{{clientData?.tipoSolicitud}}</div>
+        <div class="info-value">{{ clientData?.tipoSolicitud }}</div>
       </div>
       <div class="info-group">
         <label>TIPO DOCUMENTO</label>
-        <div class="info-value">{{clientData?.tipoDocumentoSolicitante}}</div>
+        <div class="info-value">{{ clientData?.tipoDocumentoSolicitante }}</div>
       </div>
 
       <!-- Row 2 -->
       <div class="info-group">
         <label>NÚMERO DOCUMENTO</label>
-        <div class="info-value">{{clientData?.numeroDocumentoSolicitante}}</div>
+        <div class="info-value">
+          {{ clientData?.numeroDocumentoSolicitante }}
+        </div>
       </div>
       <div class="info-group">
         <label>NOMBRE CLIENTE</label>
-        <div class="info-value">{{clientData?.nombreSolicitante}}</div>
+        <div class="info-value">{{ clientData?.nombreSolicitante }}</div>
       </div>
 
       <!-- Row 3 -->
       <div class="info-group">
         <label>TELÉFONO</label>
-        <div class="info-value">{{clientData?.telefonoSolicitante}}</div>
+        <div class="info-value">{{ clientData?.telefonoSolicitante }}</div>
       </div>
       <div class="info-group">
         <label>MAIL</label>
-        <div class="info-value">{{clientData?.emailSolicitante}}</div>
+        <div class="info-value">{{ clientData?.emailSolicitante }}</div>
       </div>
-    </div>
-  </div>
-
-  <!-- Información de comisiones -->
-  <div class="comision-card">
-    <div class="comision-item">
-      <label class="comision-label">VALOR DE LA COMISIÓN</label>
-      <div class="comision-value">{{formatearValor(valorComision)}}</div>
-    </div>
-    <div class="comision-item">
-      <label class="comision-label">I.V.A COMISIÓN</label>
-      <div class="comision-value">{{formatearValor(ivaComision)}}</div>
-    </div>
-    <div class="comision-item">
-      <label class="comision-label">GMF DEL IVA DE LA COMISIÓN</label>
-      <div class="comision-value">{{formatearValor(gmfIvaComision)}}</div>
-    </div>
-    <div class="comision-item">
-      <label class="comision-label">GMF DE LA COMISIÓN</label>
-      <div class="comision-value">{{formatearValor(gmfComision)}}</div>
     </div>
   </div>
 
@@ -60,13 +42,14 @@
       <label for="valorGiro">VALOR DEL GIRO</label>
       <div class="input-group">
         <span class="currency-symbol">$</span>
-        <input 
-          type="number" 
-          id="valorGiro" 
-          [(ngModel)]="valorGiro" 
+        <input
+          type="number"
+          id="valorGiro"
+          [(ngModel)]="valorGiro"
           class="form-control"
           (input)="validateTotalValue($event)"
-          placeholder="Ingrese el valor del giro">
+          placeholder="Ingrese el valor del giro"
+        />
       </div>
     </div>
 
@@ -75,30 +58,66 @@
       <select id="cuentaOrigen" [(ngModel)]="cuentaOrigen" class="form-control">
         <option value="" disabled selected>Seleccione una cuenta</option>
         @for (cuenta of cuentasDisponibles; track cuenta) {
-          <option [value]="cuenta">{{cuenta}}</option>
+        <option [value]="cuenta">{{ cuenta }}</option>
         }
       </select>
     </div>
 
     <div class="form-group">
       <label for="oficinaPago">OFICINA DE PAGO</label>
-      <select id="oficinaPago" [(ngModel)]="oficinaPagoSeleccionada" class="form-control">
+      <select
+        id="oficinaPago"
+        [(ngModel)]="oficinaPagoSeleccionada"
+        class="form-control"
+      >
         <option value="" disabled selected>Seleccione una oficina</option>
         @for (oficina of oficinasPago; track oficina) {
-          <option [value]="oficina">{{oficina}}</option>
+        <option [value]="oficina">{{ oficina }}</option>
         }
       </select>
     </div>
+    <!-- Botón de aceptar -->
+    <div class="button-section">
+      <button
+        class="btn-aceptar"
+        (click)="consultarImpuestos()"
+        [disabled]="!cuentaOrigen || !oficinaPagoSeleccionada"
+      >
+        Consultar
+      </button>
+    </div>
   </div>
 
-  <!-- Valor total -->
-  <div class="total-section">
-    <label class="total-label">VALOR TOTAL</label>
-    <div class="total-value">{{formatearValor(valorTotal)}}</div>
+  <!-- Loading Spinner y Comisiones -->
+  @if (isLoading) {
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Calculando valores y comisiones...</p>
   </div>
-
-  <!-- Botón de aceptar -->
-  <div class="button-section">
-    <button class="btn-aceptar" (click)="confirmarValor()">ACEPTAR</button>
+  } @else {
+  <!-- Valor total e Información de comisiones -->
+  @if (datosCalculados) {
+  <div class="comision-card">
+    <div class="comision-item">
+      <label class="comision-label">VALOR DE LA COMISIÓN</label>
+      <div class="comision-value">{{ formatearValor(valorComision) }}</div>
+    </div>
+    <div class="comision-item">
+      <label class="comision-label">I.V.A COMISIÓN</label>
+      <div class="comision-value">{{ formatearValor(ivaComision) }}</div>
+    </div>
+    <div class="comision-item">
+      <label class="comision-label">GMF DEL IVA DE LA COMISIÓN</label>
+      <div class="comision-value">{{ formatearValor(gmfIvaComision) }}</div>
+    </div>
+    <div class="comision-item">
+      <label class="comision-label">GMF DE LA COMISIÓN</label>
+      <div class="comision-value">{{ formatearValor(gmfComision) }}</div>
+    </div>
+    <div class="comision-item">
+      <label class="total-label">VALOR TOTAL</label>
+      <div class="total-value">{{ formatearValor(valorTotal) }}</div>
+    </div>
   </div>
+  } }
 </div>
