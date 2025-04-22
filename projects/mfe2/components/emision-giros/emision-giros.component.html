@@ -32,6 +32,8 @@
 
   <div class="navigation-buttons">
     <button class="btn-previous" (click)="previousStep()" [disabled]="currentStep === 1">Anterior</button>
-    <button class="btn-next" (click)="nextStep()" [disabled]="!canProceedToNextStep()">Siguiente</button>
+    @if (currentStep !== 3) {
+      <button class="btn-next" (click)="nextStep()" [disabled]="!canProceedToNextStep()">Siguiente</button>
+    }
   </div>
 </div> 

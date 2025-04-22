@@ -3,7 +3,7 @@
   <div class="consulta-form">
     <div class="form-group">
       <label for="tipoSolicitud">TIPO SOLICITUD</label>
-      <select id="tipoSolicitud" [(ngModel)]="selectedTipoSolicitud" class="form-control" required>
+      <select id="tipoSolicitud" [(ngModel)]="selectedTipoSolicitud" class="form-control" required (change)="cleanFields('type')">
         <option value="" disabled selected>Seleccione tipo de solicitud</option>
         @for (tipo of tiposSolicitud; track tipo) {
           <option [value]="tipo">{{tipo}}</option>
@@ -13,7 +13,7 @@
 
     <div class="form-group">
       <label for="tipoId">TIPO IDENTIFICACIÓN CLIENTE</label>
-      <select id="tipoId" [(ngModel)]="selectedTipoId" class="form-control">
+      <select id="tipoId" [(ngModel)]="selectedTipoId" class="form-control" (change)="cleanFields('typeDoc')">
         <option value="" disabled selected>Seleccione tipo de identificación</option>
         @for (tipo of tiposIdentificacion; track tipo) {
           <option [value]="tipo">{{tipo}}</option>

@@ -38,19 +38,19 @@
   <div class="comision-card">
     <div class="comision-item">
       <label class="comision-label">VALOR DE LA COMISIÓN</label>
-      <div class="comision-value">${{valorComision}}</div>
+      <div class="comision-value">{{formatearValor(valorComision)}}</div>
     </div>
     <div class="comision-item">
       <label class="comision-label">I.V.A COMISIÓN</label>
-      <div class="comision-value">${{ivaComision}}</div>
+      <div class="comision-value">{{formatearValor(ivaComision)}}</div>
     </div>
     <div class="comision-item">
       <label class="comision-label">GMF DEL IVA DE LA COMISIÓN</label>
-      <div class="comision-value">${{gmfIvaComision}}</div>
+      <div class="comision-value">{{formatearValor(gmfIvaComision)}}</div>
     </div>
     <div class="comision-item">
       <label class="comision-label">GMF DE LA COMISIÓN</label>
-      <div class="comision-value">${{gmfComision}}</div>
+      <div class="comision-value">{{formatearValor(gmfComision)}}</div>
     </div>
   </div>
 
@@ -65,6 +65,7 @@
           id="valorGiro" 
           [(ngModel)]="valorGiro" 
           class="form-control"
+          (input)="validateTotalValue($event)"
           placeholder="Ingrese el valor del giro">
       </div>
     </div>
@@ -93,7 +94,7 @@
   <!-- Valor total -->
   <div class="total-section">
     <label class="total-label">VALOR TOTAL</label>
-    <div class="total-value">${{valorTotal}}</div>
+    <div class="total-value">{{formatearValor(valorTotal)}}</div>
   </div>
 
   <!-- Botón de aceptar -->
