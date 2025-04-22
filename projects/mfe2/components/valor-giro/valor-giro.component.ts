@@ -17,6 +17,11 @@ interface GiroData {
   regional?: string;
   cajero?: string;
   fechaEmision?: Date;
+  comision?: number;
+  ivaComision?: number;
+  gmfComision?: number;
+  gmfIva?: number;
+  valorTotal?: number;
 }
 
 @Component({
@@ -125,13 +130,22 @@ export class ValorGiroComponent {
     // Recuperar datos guardados si existen
     const savedData = this.giroDataService.getGiroData();
     if (savedData) {
-      this.valorGiro = savedData.valorGiro;
-      this.cuentaOrigen = savedData.cuentaOrigen;
-      this.oficinaPagoSeleccionada = savedData.nombreOficina;
-      // Calcular valores
-      this.valorTotal = +this.valorComision + +this.ivaComision + +this.gmfComision + +this.gmfIvaComision + savedData.valorGiro;
-      // Si hay datos guardados, emitimos que están listos
-      this.valorConfirmado.emit(true);
+      this.valorGiro = savedData.valorGiro || 0;
+      this.cuentaOrigen = savedData.cuentaOrigen || '';
+      this.oficinaPagoSeleccionada = savedData.nombreOficina || '';
+      
+      // Recuperar valores de impuestos
+      this.valorComision = savedData.comision || 0;
+      this.ivaComision = savedData.ivaComision || 0;
+      this.gmfComision = savedData.gmfComision || 0;
+      this.gmfIvaComision = savedData.gmfIva || 0;
+      this.valorTotal = savedData.valorTotal || 0;
+      
+      // Si hay datos guardados, marcar como calculados
+      if (this.valorTotal > 0) {
+        this.datosCalculados = true;
+        this.valorConfirmado.emit(true);
+      }
     }
   }
 
@@ -158,7 +172,12 @@ export class ValorGiroComponent {
             ...currentData,
             valorGiro: this.valorGiro,
             cuentaOrigen: this.cuentaOrigen,
-            nombreOficina: this.oficinaPagoSeleccionada
+            nombreOficina: this.oficinaPagoSeleccionada,
+            comision: this.valorComision,
+            ivaComision: this.ivaComision,
+            gmfComision: this.gmfComision,
+            gmfIva: this.gmfIvaComision,
+            valorTotal: this.valorTotal
           });
         }
 

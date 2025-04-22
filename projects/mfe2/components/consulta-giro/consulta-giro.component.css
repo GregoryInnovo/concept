@@ -59,7 +59,7 @@ select.form-control option {
   box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
 }
 
-.btn-buscar {
+.btn-search {
   background-color: #007bff;
   color: white;
   padding: 10px 20px;
@@ -70,7 +70,7 @@ select.form-control option {
   font-weight: bold;
 }
 
-.btn-buscar:hover {
+.btn-search:hover {
   background-color: #0056b3;
 }
 

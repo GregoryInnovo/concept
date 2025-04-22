@@ -173,6 +173,21 @@ select.form-control {
   opacity: 0.7;
 }
 
+.btn-search {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: bold;
+}
+
+.btn-search:hover {
+  background-color: #0056b3;
+}
+
 /* Loading Spinner */
 .loading-spinner {
   text-align: center;
@@ -225,4 +240,50 @@ select.form-control {
   font-size: 16px;
   font-weight: 600;
   color: #333;
+}
+
+.tax-section {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.tax-section h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.1em;
+}
+
+.tax-grid {
+  display: grid;
+  gap: 15px;
+}
+
+.tax-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: white;
+  border-radius: 4px;
+}
+
+.tax-row .label {
+  font-weight: bold;
+  color: #555;
+}
+
+.tax-row .value {
+  color: #333;
+  font-family: monospace;
+}
+
+.tax-row.total {
+  background-color: #e3f2fd;
+  font-weight: bold;
+}
+
+.tax-row.total .value {
+  color: #1976d2;
 }

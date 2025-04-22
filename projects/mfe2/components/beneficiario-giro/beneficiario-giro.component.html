@@ -5,40 +5,40 @@
     <div class="info-row">
       <div class="info-group">
         <label>TIPO DOCUMENTO</label>
-        <div class="info-value">{{solicitanteData.tipoDocumento}}</div>
+        <div class="info-value">{{ solicitanteData.tipoDocumento }}</div>
       </div>
       <div class="info-group">
         <label>NÚMERO DOCUMENTO</label>
-        <div class="info-value">{{solicitanteData.numeroDocumento}}</div>
+        <div class="info-value">{{ solicitanteData.numeroDocumento }}</div>
       </div>
     </div>
 
     <div class="info-row">
       <div class="info-group">
         <label>NOMBRE CLIENTE</label>
-        <div class="info-value">{{solicitanteData.nombreCliente}}</div>
+        <div class="info-value">{{ solicitanteData.nombreCliente }}</div>
       </div>
     </div>
 
     <div class="info-row">
       <div class="info-group">
         <label>TELÉFONO</label>
-        <div class="info-value">{{solicitanteData.telefono}}</div>
+        <div class="info-value">{{ solicitanteData.telefono }}</div>
       </div>
       <div class="info-group">
         <label>MAIL</label>
-        <div class="info-value">{{solicitanteData.email}}</div>
+        <div class="info-value">{{ solicitanteData.email }}</div>
       </div>
     </div>
 
     <div class="info-row">
       <div class="info-group">
         <label>VALOR TOTAL DEL GIRO</label>
-        <div class="info-value">$ {{solicitanteData.valorTotalGiro}}</div>
+        <div class="info-value">$ {{ solicitanteData.valorTotalGiro }}</div>
       </div>
       <div class="info-group">
         <label>CUENTA ORIGEN</label>
-        <div class="info-value">{{solicitanteData.cuentaOrigen}}</div>
+        <div class="info-value">{{ solicitanteData.cuentaOrigen }}</div>
       </div>
     </div>
   </div>
@@ -46,90 +46,58 @@
   <!-- Formulario del beneficiario -->
   <div class="beneficiario-section">
     <h3 class="section-title">DATOS DEL BENEFICIARIO</h3>
+
+    <!-- Checkbox Autorizado -->
+    <div class="form-group" *ngIf="solicitanteData">
+      <div class="autorizado-checkbox" [class.checked]="isAutorizadoChecked">
+        <label>AUTORIZADO</label>
+        <input type="checkbox" [checked]="isAutorizadoChecked" disabled />
+      </div>
+    </div>
     
     <div class="form-group">
       <label for="tipoDoc">TIPO DOCUMENTO</label>
-      <select 
-        id="tipoDoc" 
-        [(ngModel)]="beneficiarioData.tipoDocumento" 
+      <select
+        id="tipoDoc"
+        [(ngModel)]="beneficiarioData.tipoDocumento"
         class="form-control"
-        required>
+        required
+      >
         <option value="" disabled selected>Seleccione tipo de documento</option>
         @for (tipo of tiposDocumentoBeneficiario; track tipo) {
-          <option [value]="tipo">{{tipo}}</option>
+        <option [value]="tipo">{{ tipo }}</option>
         }
       </select>
     </div>
 
     <div class="form-group">
       <label for="numDoc">NÚMERO DOCUMENTO</label>
-      <input 
-        type="text" 
-        id="numDoc" 
-        [(ngModel)]="beneficiarioData.numeroDocumento" 
+      <input
+        type="text"
+        id="numDoc"
+        [(ngModel)]="beneficiarioData.numeroDocumento"
         class="form-control"
         maxlength="10"
         minlength="5"
         pattern="[0-9]*"
         placeholder="Ingrese número de documento"
         (input)="validateNumericInput($event)"
-        required>
+        required
+      />
     </div>
 
     <div class="form-group">
       <label for="nombre">NOMBRE CLIENTE</label>
-      <input 
-        type="text" 
-        id="nombre" 
-        [(ngModel)]="beneficiarioData.nombreCliente" 
+      <input
+        type="text"
+        id="nombre"
+        [(ngModel)]="beneficiarioData.nombreCliente"
         class="form-control"
         maxlength="20"
         placeholder="Ingrese nombre del beneficiario"
         (input)="validateNombreInput($event)"
-        required>
-    </div>
-  </div>
-
-  <!-- Formulario del autorizado -->
-  <div class="beneficiario-section">
-    <h3 class="section-title">INFORMACIÓN AUTORIZADO</h3>
-    
-    <div class="form-group">
-      <label for="tipoDocAutorizado">TIPO IDENTIFICACIÓN</label>
-      <select 
-        id="tipoDocAutorizado" 
-        [(ngModel)]="autorizadoData.tipoDocumento" 
-        class="form-control">
-        <option value="" disabled selected>Seleccione tipo de documento</option>
-        @for (tipo of tiposDocumentoAutorizado; track tipo) {
-          <option [value]="tipo">{{tipo}}</option>
-        }
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="numDocAutorizado">NÚMERO IDENTIFICACIÓN</label>
-      <input 
-        type="text" 
-        id="numDocAutorizado" 
-        [(ngModel)]="autorizadoData.numeroDocumento" 
-        class="form-control"
-        maxlength="10"
-        minlength="5"
-        placeholder="Ingrese número de documento"
-        (input)="validateAlphanumericInput($event)">
-    </div>
-
-    <div class="form-group">
-      <label for="nombreAutorizado">NOMBRE AUTORIZADO</label>
-      <input 
-        type="text" 
-        id="nombreAutorizado" 
-        [(ngModel)]="autorizadoData.nombreAutorizado" 
-        class="form-control"
-        maxlength="20"
-        placeholder="Ingrese nombre del autorizado"
-        (input)="validateNombreInput($event)">
+        required
+      />
     </div>
   </div>
 
@@ -140,5 +108,18 @@
 </div>
 
 @if (showComprobante) {
-  <app-comprobante-giro (cerrarComprobante)="onCerrarComprobante()" />
+<app-comprobante-giro (cerrarComprobante)="onCerrarComprobante()" />
+}
+
+@if (showConfirmDialog) {
+<app-confirmation-dialog
+  title="Confirmar Emisión"
+  message="¿Está seguro que desea emitir el giro con los datos ingresados?"
+  (confirm)="onConfirmEmitir()"
+  (cancel)="onCancelEmitir()"
+/>
+}
+
+@if (isLoading) {
+<app-loading-spinner />
 }

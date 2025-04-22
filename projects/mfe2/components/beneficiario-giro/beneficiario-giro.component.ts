@@ -3,11 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ComprobanteGiroComponent } from '../comprobante-giro/comprobante-giro.component';
 import { GiroDataService } from '../../services/giro-data.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-beneficiario-giro',
   standalone: true,
-  imports: [CommonModule, FormsModule, ComprobanteGiroComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ComprobanteGiroComponent, 
+    ConfirmationDialogComponent,
+    LoadingSpinnerComponent
+  ],
   templateUrl: './beneficiario-giro.component.html',
   styleUrls: ['./beneficiario-giro.component.css']
 })
@@ -16,7 +24,10 @@ export class BeneficiarioGiroComponent implements OnInit {
   @Output() reiniciarProceso = new EventEmitter<void>();
 
   showComprobante = false;
+  showConfirmDialog = false;
+  isLoading = false;
   solicitanteData: any = null;
+  isAutorizadoChecked = false;
 
   beneficiarioData = {
     tipoDocumento: '',
@@ -60,6 +71,9 @@ export class BeneficiarioGiroComponent implements OnInit {
         valorTotalGiro: savedData.valorTotal,
         cuentaOrigen: savedData.cuentaOrigen
       };
+
+      // Set autorizado checkbox based on tipo de solicitud
+      this.isAutorizadoChecked = savedData.tipoSolicitud === 'N - CHEQUE';
 
       if (savedData.tipoDocumentoBeneficiario) {
         this.beneficiarioData = {
@@ -134,42 +148,34 @@ export class BeneficiarioGiroComponent implements OnInit {
       return;
     }
 
-    // Validar campos del autorizado si están presentes
-    if (this.autorizadoData.tipoDocumento || 
-        this.autorizadoData.numeroDocumento || 
-        this.autorizadoData.nombreAutorizado) {
+    this.showConfirmDialog = true;
+  }
+
+  onConfirmEmitir() {
+    this.showConfirmDialog = false;
+    this.isLoading = true;
+
+    // Simular proceso de carga
+    setTimeout(() => {
+      this.isLoading = false;
       
-      if (!this.autorizadoData.tipoDocumento || 
-          !this.autorizadoData.numeroDocumento || 
-          !this.autorizadoData.nombreAutorizado) {
-        alert('Si ingresa información del autorizado, debe completar todos los campos');
-        return;
-      }
+      // Actualizar datos del giro
+      this.giroDataService.updateGiroData({
+        tipoDocumentoBeneficiario: this.beneficiarioData.tipoDocumento,
+        numeroDocumentoBeneficiario: this.beneficiarioData.numeroDocumento,
+        nombreBeneficiario: this.beneficiarioData.nombreCliente,
+        tipoDocumentoAutorizado: this.autorizadoData.tipoDocumento || undefined,
+        numeroDocumentoAutorizado: this.autorizadoData.numeroDocumento || undefined,
+        nombreAutorizado: this.autorizadoData.nombreAutorizado || undefined,
+        numeroGiro: Math.floor(Math.random() * 1000000).toString().padStart(6, '0')
+      });
 
-      if (this.autorizadoData.numeroDocumento.length < 5 || 
-          this.autorizadoData.numeroDocumento.length > 10) {
-        alert('El número de identificación del autorizado debe tener entre 5 y 10 caracteres');
-        return;
-      }
+      this.showComprobante = true;
+    }, 2000); // 2 segundos de carga simulada
+  }
 
-      if (this.autorizadoData.nombreAutorizado.length > 20) {
-        alert('El nombre del autorizado no puede exceder los 20 caracteres');
-        return;
-      }
-    }
-
-    // Actualizar datos del giro
-    this.giroDataService.updateGiroData({
-      tipoDocumentoBeneficiario: this.beneficiarioData.tipoDocumento,
-      numeroDocumentoBeneficiario: this.beneficiarioData.numeroDocumento,
-      nombreBeneficiario: this.beneficiarioData.nombreCliente,
-      tipoDocumentoAutorizado: this.autorizadoData.tipoDocumento || undefined,
-      numeroDocumentoAutorizado: this.autorizadoData.numeroDocumento || undefined,
-      nombreAutorizado: this.autorizadoData.nombreAutorizado || undefined,
-      numeroGiro: Math.floor(Math.random() * 1000000).toString().padStart(6, '0')
-    });
-
-    this.showComprobante = true;
+  onCancelEmitir() {
+    this.showConfirmDialog = false;
   }
 
   onCerrarComprobante() {
