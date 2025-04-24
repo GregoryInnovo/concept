@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 export interface TipoIdentificacion {
   codigo: string;
@@ -11,13 +10,16 @@ export interface TipoIdentificacion {
   providedIn: 'root',
 })
 export class TipoIdentificacionService {
-  private apiUrl = 'http://localhost:8080/api/emision/tipo-identificacion';
-
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   getTiposIdentificacion(): Observable<TipoIdentificacion[]> {
-    return this.http.get<{ statusCode: number; message: string; data: TipoIdentificacion[] }>(this.apiUrl).pipe(
-      map((resp) => resp.data as TipoIdentificacion[])
-    );
+    // Datos estáticos mientras se resuelve el problema de HttpClient
+    const tiposIdentificacion: TipoIdentificacion[] = [
+      { codigo: 'CC', descripcion: 'Cedula de Ciudadania' },
+      { codigo: 'CE', descripcion: 'Cedula de Extranjeria' },
+      { codigo: 'PT', descripcion: 'PERMISO POR PROTECCIÓN TEMPORAL' },
+      { codigo: 'NIT', descripcion: 'Número de Identificación Tributaria' }
+    ];
+    return of(tiposIdentificacion);
   }
 }

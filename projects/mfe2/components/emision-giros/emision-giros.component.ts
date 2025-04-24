@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConsultaGiroComponent } from '../consulta-giro/consulta-giro.component';
-import { ValidacionBiometricaComponent } from '../validacion-biometrica/validacion-biometrica.component';
 import { ValorGiroComponent } from '../valor-giro/valor-giro.component';
 import { BeneficiarioGiroComponent } from '../beneficiario-giro/beneficiario-giro.component';
 import { GiroDataService } from '../../services/giro-data.service';
@@ -10,9 +9,8 @@ import { GiroDataService } from '../../services/giro-data.service';
   selector: 'app-emision-giros',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     ConsultaGiroComponent, 
-    ValidacionBiometricaComponent,
     ValorGiroComponent,
     BeneficiarioGiroComponent
   ],
