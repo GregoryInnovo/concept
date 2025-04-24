@@ -1,7 +1,9 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GiroDataService } from '../../services/giro-data.service';
+import { TipoIdentificacionService, TipoIdentificacion } from '../../services/tipo-identificacion.service';
+import { HttpClientModule } from '@angular/common/http';
 
 interface ConsultaData {
   nombreCliente: string;
@@ -12,11 +14,11 @@ interface ConsultaData {
 @Component({
   selector: 'app-consulta-giro',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './consulta-giro.component.html',
   styleUrls: ['./consulta-giro.component.css']
 })
-export class ConsultaGiroComponent {
+export class ConsultaGiroComponent implements OnInit {
   @Output() datosListos = new EventEmitter<boolean>();
 
   selectedTipoId: string = '';
@@ -30,14 +32,12 @@ export class ConsultaGiroComponent {
     'N - CHEQUE'
   ];
 
-  tiposIdentificacion = [
-    'CC - CEDULA DE CIUDADANIA',
-    'CE - CEDULA DE EXTRANJERIA',
-    'PT - PERMISO POR PROTECCIÓN TEMPORAL',
-    'NIT - EMPRESA'
-  ];
+  tiposIdentificacion: TipoIdentificacion[] = [];
 
-  constructor(private giroDataService: GiroDataService) {
+  constructor(
+    private giroDataService: GiroDataService,
+    private tipoIdentificacionService: TipoIdentificacionService
+  ) {
     // Recuperar datos guardados si existen
     const savedData = this.giroDataService.getGiroData();
     if (savedData) {
@@ -52,6 +52,17 @@ export class ConsultaGiroComponent {
       // Si hay datos guardados, emitimos que están listos
       this.datosListos.emit(true);
     }
+  }
+
+  ngOnInit(): void {
+    this.tipoIdentificacionService.getTiposIdentificacion().subscribe({
+      next: (tipos) => {
+        this.tiposIdentificacion = tipos;
+      },
+      error: () => {
+        this.tiposIdentificacion = [];
+      }
+    });
   }
 
   cleanFields(key: string): void {

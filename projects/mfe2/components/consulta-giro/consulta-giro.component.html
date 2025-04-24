@@ -15,8 +15,8 @@
       <label for="tipoId">TIPO IDENTIFICACIÓN CLIENTE</label>
       <select id="tipoId" [(ngModel)]="selectedTipoId" class="form-control" (change)="cleanFields('typeDoc')">
         <option value="" disabled selected>Seleccione tipo de identificación</option>
-        @for (tipo of tiposIdentificacion; track tipo) {
-          <option [value]="tipo">{{tipo}}</option>
+        @for (tipo of tiposIdentificacion; track tipo.codigo) {
+          <option [value]="tipo.codigo">{{ tipo.codigo }} - {{ tipo.descripcion }}</option>
         }
       </select>
     </div>
