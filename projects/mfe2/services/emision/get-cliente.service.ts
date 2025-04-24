@@ -11,22 +11,16 @@ export interface Cliente {
     tipoIdentificacion: string
 }
 
-export interface ResponseCliente {
-    statusCode: number
-    message: string;
-    data: Cliente
-}
-
 @Injectable({
     providedIn: 'root',
 })
-export class GteClienteService {
+export class GetClienteService {
     private apiUrl = 'emision/cliente';
 
     constructor(private http: HttpClient) { }
 
-    getClienteInfo(tipoDocumento: string, numeroDocumento: string): Observable<ResponseCliente> {
-        return this.http.get<{ statusCode: number; message: string; data: ResponseCliente }>(`${this.apiUrl}/${tipoDocumento}/${numeroDocumento}`).pipe(
+    getClienteInfo(tipoDocumento: string, numeroDocumento: string): Observable<Cliente> {
+        return this.http.get<{ statusCode: number; message: string; data: Cliente }>(`${this.apiUrl}/${tipoDocumento}/${numeroDocumento}`).pipe(
             map((resp) => resp.data)
         );
     }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { ResponseCuentas } from '../emision/get-cuentas.service';
 
 export interface GiroData {
   // Datos del solicitante
@@ -9,7 +10,7 @@ export interface GiroData {
   nombreSolicitante: string;
   telefonoSolicitante: string;
   emailSolicitante: string;
-  cuentaOrigen: string;
+  cuentaOrigen: ResponseCuentas | null;
 
   // Datos del beneficiario
   tipoDocumentoBeneficiario: string;

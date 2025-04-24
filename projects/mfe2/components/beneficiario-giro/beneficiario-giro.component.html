@@ -38,7 +38,8 @@
       </div>
       <div class="info-group">
         <label>CUENTA ORIGEN</label>
-        <div class="info-value">{{ solicitanteData.cuentaOrigen }}</div>
+        <div class="info-value">{{ solicitanteData.cuentaOrigen?.tipoCuenta }} - {{
+          solicitanteData.cuentaOrigen?.numeroCuenta }}</div>
       </div>
     </div>
   </div>
@@ -54,15 +55,10 @@
         <input type="checkbox" [checked]="isAutorizadoChecked" disabled />
       </div>
     </div>
-    
+
     <div class="form-group">
       <label for="tipoDoc">TIPO DOCUMENTO</label>
-      <select
-        id="tipoDoc"
-        [(ngModel)]="beneficiarioData.tipoDocumento"
-        class="form-control"
-        required
-      >
+      <select id="tipoDoc" [(ngModel)]="beneficiarioData.tipoDocumento" class="form-control" required>
         <option value="" disabled selected>Seleccione tipo de documento</option>
         @for (tipo of tiposDocumentoBeneficiario; track tipo) {
         <option [value]="tipo">{{ tipo }}</option>
@@ -72,32 +68,15 @@
 
     <div class="form-group">
       <label for="numDoc">NÚMERO DOCUMENTO</label>
-      <input
-        type="text"
-        id="numDoc"
-        [(ngModel)]="beneficiarioData.numeroDocumento"
-        class="form-control"
-        maxlength="10"
-        minlength="5"
-        pattern="[0-9]*"
-        placeholder="Ingrese número de documento"
-        (input)="validateNumericInput($event)"
-        required
-      />
+      <input type="text" id="numDoc" [(ngModel)]="beneficiarioData.numeroDocumento" class="form-control" maxlength="10"
+        minlength="5" pattern="[0-9]*" placeholder="Ingrese número de documento" (input)="validateNumericInput($event)"
+        required />
     </div>
 
     <div class="form-group">
       <label for="nombre">NOMBRE CLIENTE</label>
-      <input
-        type="text"
-        id="nombre"
-        [(ngModel)]="beneficiarioData.nombreCliente"
-        class="form-control"
-        maxlength="20"
-        placeholder="Ingrese nombre del beneficiario"
-        (input)="validateNombreInput($event)"
-        required
-      />
+      <input type="text" id="nombre" [(ngModel)]="beneficiarioData.nombreCliente" class="form-control" maxlength="20"
+        placeholder="Ingrese nombre del beneficiario" (input)="validateNombreInput($event)" required />
     </div>
   </div>
 
@@ -112,12 +91,9 @@
 }
 
 @if (showConfirmDialog) {
-<app-confirmation-dialog
-  title="Confirmar Emisión"
-  message="¿Está seguro que desea emitir el giro con los datos ingresados?"
-  (confirm)="onConfirmEmitir()"
-  (cancel)="onCancelEmitir()"
-/>
+<app-confirmation-dialog title="Confirmar Emisión"
+  message="¿Está seguro que desea emitir el giro con los datos ingresados?" (confirm)="onConfirmEmitir()"
+  (cancel)="onCancelEmitir()" />
 }
 
 @if (isLoading) {

@@ -27,10 +27,11 @@
           <div class="value">{{ datosComprobante.cajero }}</div>
         </div>
 
-        <!-- <div class="info-row">
+        <div class="info-row">
           <div class="label">Cuenta Origen</div>
-          <div class="value">{{datosComprobante.cuentaOrigen}}</div>
-        </div> -->
+          <div class="value">{{datosComprobante.cuentaOrigen?.tipoCuenta}} - {{
+            datosComprobante.cuentaOrigen?.numeroCuenta }}</div>
+        </div>
 
         <!-- <div class="info-row">
           <div class="label">Solicitante</div>
@@ -98,7 +99,8 @@
         <!-- <ng-container *ngIf="datosComprobante.nombreAutorizado">
           <div class="info-row">
             <div class="label">Identificación del autorizado</div>
-            <div class="value">{{datosComprobante.tipoDocumentoAutorizado}} {{datosComprobante.numeroDocumentoAutorizado}}</div>
+            <div class="value">{{datosComprobante.tipoDocumentoAutorizado}}
+              {{datosComprobante.numeroDocumentoAutorizado}}</div>
           </div>
 
           <div class="info-row">

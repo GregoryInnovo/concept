@@ -4,13 +4,14 @@ import { ConsultaGiroComponent } from '../consulta-giro/consulta-giro.component'
 import { ValorGiroComponent } from '../valor-giro/valor-giro.component';
 import { BeneficiarioGiroComponent } from '../beneficiario-giro/beneficiario-giro.component';
 import { GiroDataService } from '../../services/storage/giro-data.service';
+import { GetSaldoService } from '../../services/emision/get-saldo.service';
 
 @Component({
   selector: 'app-emision-giros',
   standalone: true,
   imports: [
     CommonModule,
-    ConsultaGiroComponent, 
+    ConsultaGiroComponent,
     ValorGiroComponent,
     BeneficiarioGiroComponent
   ],
@@ -40,7 +41,10 @@ export class EmisionGirosComponent {
     }
   ];
 
-  constructor(public giroDataService: GiroDataService) {}
+  constructor(
+    public giroDataService: GiroDataService,
+    public getSaldoService: GetSaldoService
+  ) { }
 
   isStepActive(step: number): boolean {
     return this.currentStep === step;
@@ -60,7 +64,8 @@ export class EmisionGirosComponent {
         return this.pasoConsultaCompleto;
       case 2:
         const giroData = this.giroDataService.getGiroData();
-        return giroData && giroData.valorGiro ? giroData.valorGiro > 0 : false;
+        const validateFields = giroData?.ivaComision && giroData?.gmfComision && giroData?.gmfIva && giroData?.comision
+        return giroData && giroData.valorGiro && validateFields ? giroData.valorGiro > 0 : false;
       case 3:
         return true;
       default:
@@ -79,8 +84,34 @@ export class EmisionGirosComponent {
           alert('Por favor complete todos los campos requeridos antes de continuar');
         }
         return;
+      } else {
+        if (this.currentStep === 2) {
+          const giroData = this.giroDataService.getGiroData();
+          if (giroData) {
+            this.getSaldoService.getSaldoCuenta(giroData?.tipoDocumentoSolicitante, giroData?.numeroDocumentoSolicitante, giroData?.cuentaOrigen).subscribe({
+              next: (dataSaldo) => {
+                if (+dataSaldo?.data >= +giroData?.valorTotal) {
+                  this.currentStep++;
+                } else {
+                  if (+dataSaldo?.data === 0) {
+                    alert(dataSaldo?.message)
+                    this.currentStep++;
+                  } else {
+                    if (+dataSaldo?.data < +giroData?.valorTotal) {
+                      alert('El valor de la transacción es mayor al saldo de la cuenta')
+                    }
+                  }
+                }
+              },
+              error: () => {
+                alert('Ocurrió un error al consultar el saldo de la cuenta')
+              },
+            });
+          }
+        } else {
+          this.currentStep++;
+        }
       }
-      this.currentStep++;
     }
   }
 
