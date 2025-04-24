@@ -2,8 +2,10 @@ import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GiroDataService } from '../../services/giro-data.service';
-import { TipoIdentificacionService, TipoIdentificacion } from '../../services/tipo-identificacion.service';
-import { HttpClientModule } from '@angular/common/http';
+import {
+  TipoIdentificacionService,
+  TipoIdentificacion,
+} from '../../services/tipo-identificacion.service';
 
 interface ConsultaData {
   nombreCliente: string;
@@ -14,9 +16,9 @@ interface ConsultaData {
 @Component({
   selector: 'app-consulta-giro',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule], // Removemos HttpClientModule de aquí
   templateUrl: './consulta-giro.component.html',
-  styleUrls: ['./consulta-giro.component.css']
+  styleUrls: ['./consulta-giro.component.css'],
 })
 export class ConsultaGiroComponent implements OnInit {
   @Output() datosListos = new EventEmitter<boolean>();
@@ -27,10 +29,7 @@ export class ConsultaGiroComponent implements OnInit {
   isLoading: boolean = false;
   consultaData: ConsultaData | null = null;
 
-  tiposSolicitud = [
-    'P - GIRO',
-    'N - CHEQUE'
-  ];
+  tiposSolicitud = ['P - GIRO', 'N - CHEQUE'];
 
   tiposIdentificacion: TipoIdentificacion[] = [];
 
@@ -47,7 +46,7 @@ export class ConsultaGiroComponent implements OnInit {
       this.consultaData = {
         nombreCliente: savedData.nombreSolicitante,
         telefono: savedData.telefonoSolicitante,
-        email: savedData.emailSolicitante
+        email: savedData.emailSolicitante,
       };
       // Si hay datos guardados, emitimos que están listos
       this.datosListos.emit(true);
@@ -61,25 +60,25 @@ export class ConsultaGiroComponent implements OnInit {
       },
       error: () => {
         this.tiposIdentificacion = [];
-      }
+      },
     });
   }
 
   cleanFields(key: string): void {
     try {
       if (key === 'type') {
-        this.selectedTipoId = ''
-        this.consultaData = null
-        this.numeroIdentificacion = ''
+        this.selectedTipoId = '';
+        this.consultaData = null;
+        this.numeroIdentificacion = '';
       }
       if (key === 'typeDoc') {
-        this.consultaData = null
-        this.numeroIdentificacion = ''
+        this.consultaData = null;
+        this.numeroIdentificacion = '';
       }
       // Si cambia alguno de los valores como tipo de identificación o tipo de solicitud, se actualiza el estado de los datos
       this.datosListos.emit(false); // evita que se emita true cuando se cambia el tipo de identificación o tipo de solicitud
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
@@ -87,16 +86,23 @@ export class ConsultaGiroComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(/[^0-9]/g, '');
     this.numeroIdentificacion = input.value;
-    this.consultaData = null
+    this.consultaData = null;
   }
 
   onBuscar(): void {
-    if (!this.selectedTipoId || !this.numeroIdentificacion || !this.selectedTipoSolicitud) {
+    if (
+      !this.selectedTipoId ||
+      !this.numeroIdentificacion ||
+      !this.selectedTipoSolicitud
+    ) {
       alert('Por favor complete todos los campos');
       return;
     }
 
-    if (this.numeroIdentificacion.length < 5 || this.numeroIdentificacion.length > 10) {
+    if (
+      this.numeroIdentificacion.length < 5 ||
+      this.numeroIdentificacion.length > 10
+    ) {
       alert('El número de identificación debe tener entre 5 y 10 dígitos');
       return;
     }
@@ -110,7 +116,7 @@ export class ConsultaGiroComponent implements OnInit {
       this.consultaData = {
         nombreCliente: 'JUAN PÉREZ GONZÁLEZ',
         telefono: '3001234567',
-        email: 'juan.perez@example.com'
+        email: 'juan.perez@example.com',
       };
 
       this.giroDataService.updateGiroData({
@@ -126,7 +132,7 @@ export class ConsultaGiroComponent implements OnInit {
         nombreOficina: '',
         regional: 'Sur',
         cajero: 'LMDR4836',
-        fechaEmision: new Date()
+        fechaEmision: new Date(),
       });
 
       this.isLoading = false;
