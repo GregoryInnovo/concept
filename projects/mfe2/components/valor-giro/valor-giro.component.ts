@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GiroDataService } from '../../services/giro-data.service';
+import { GiroDataService } from '../../services/storage/giro-data.service';
 
 interface GiroData {
   tipoSolicitud: string;

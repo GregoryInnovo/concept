@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ComprobanteGiroComponent } from '../comprobante-giro/comprobante-giro.component';
-import { GiroDataService } from '../../services/giro-data.service';
+import { GiroDataService } from '../../services/storage/giro-data.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 

@@ -12,7 +12,7 @@ export interface TipoIdentificacion {
   providedIn: 'root',
 })
 export class TipoIdentificacionService {
-  private apiUrl = 'http://localhost:8080/api/emision/tipo-identificacion';
+  private apiUrl = 'emision/tipo-identificacion';
 
   constructor(private http: HttpClient) {}
 

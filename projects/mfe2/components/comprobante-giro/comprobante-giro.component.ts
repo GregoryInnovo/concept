@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GiroDataService, GiroData } from '../../services/giro-data.service';
+import { GiroDataService, GiroData } from '../../services/storage/giro-data.service';
 
 @Component({
   selector: 'app-comprobante-giro',
