@@ -42,34 +42,24 @@
       <label for="valorGiro">VALOR DEL GIRO</label>
       <div class="input-group">
         <span class="currency-symbol">$</span>
-        <input
-          type="number"
-          id="valorGiro"
-          [(ngModel)]="valorGiro"
-          class="form-control"
-          (input)="validateTotalValue($event)"
-          placeholder="Ingrese el valor del giro"
-        />
+        <input type="number" id="valorGiro" [(ngModel)]="valorGiro" class="form-control"
+          (input)="validateTotalValue($event)" placeholder="Ingrese el valor del giro" />
       </div>
     </div>
 
     <div class="form-group">
       <label for="cuentaOrigen">CUENTA ORIGEN</label>
-      <select id="cuentaOrigen" [(ngModel)]="cuentaOrigen" class="form-control">
-        <option value="" disabled selected>Seleccione una cuenta</option>
-        @for (cuenta of cuentasDisponibles; track cuenta) {
-        <option [value]="cuenta">{{ cuenta }}</option>
-        }
+      <select id="cuentaOrigen" [(ngModel)]="cuentaOrigen" class="form-control" (change)="cleanFields()">
+        <option [ngValue]="null" disabled>Seleccione una cuenta</option>
+        <option *ngFor="let cuenta of cuentasDisponibles" [ngValue]="cuenta">
+          {{ cuenta?.tipoCuenta }} - {{ cuenta?.numeroCuenta }}
+        </option>
       </select>
     </div>
 
     <div class="form-group">
       <label for="oficinaPago">OFICINA DE PAGO</label>
-      <select
-        id="oficinaPago"
-        [(ngModel)]="oficinaPagoSeleccionada"
-        class="form-control"
-      >
+      <select id="oficinaPago" [(ngModel)]="oficinaPagoSeleccionada" class="form-control" (change)="cleanFields()">
         <option value="" disabled selected>Seleccione una oficina</option>
         @for (oficina of oficinasPago; track oficina) {
         <option [value]="oficina">{{ oficina }}</option>
@@ -78,11 +68,7 @@
     </div>
     <!-- Botón de aceptar -->
     <div class="button-section">
-      <button
-        class="btn-search"
-        (click)="consultarImpuestos()"
-        [disabled]="!cuentaOrigen || !oficinaPagoSeleccionada"
-      >
+      <button class="btn-search" (click)="consultarImpuestos()" [disabled]="!cuentaOrigen || !oficinaPagoSeleccionada">
         CONSULTAR
       </button>
     </div>

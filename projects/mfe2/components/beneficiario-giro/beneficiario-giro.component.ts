@@ -5,14 +5,15 @@ import { ComprobanteGiroComponent } from '../comprobante-giro/comprobante-giro.c
 import { GiroDataService } from '../../services/storage/giro-data.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
+import { ListaRestrictivaService } from '../../services/emision/lista-restrictiva.service';
 
 @Component({
   selector: 'app-beneficiario-giro',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    ComprobanteGiroComponent, 
+    CommonModule,
+    FormsModule,
+    ComprobanteGiroComponent,
     ConfirmationDialogComponent,
     LoadingSpinnerComponent
   ],
@@ -56,7 +57,10 @@ export class BeneficiarioGiroComponent implements OnInit {
     'NIT - NUMERO DE IDENTIFICACION TRIBUTARIA'
   ];
 
-  constructor(private giroDataService: GiroDataService) {}
+  constructor(
+    private giroDataService: GiroDataService,
+    private getListaRestrivtivaService: ListaRestrictivaService
+  ) { }
 
   ngOnInit() {
     const savedData = this.giroDataService.getGiroData();
@@ -130,15 +134,15 @@ export class BeneficiarioGiroComponent implements OnInit {
   }
 
   emitir() {
-    if (!this.beneficiarioData.tipoDocumento || 
-        !this.beneficiarioData.numeroDocumento || 
-        !this.beneficiarioData.nombreCliente) {
+    if (!this.beneficiarioData.tipoDocumento ||
+      !this.beneficiarioData.numeroDocumento ||
+      !this.beneficiarioData.nombreCliente) {
       alert('Por favor complete todos los campos del beneficiario');
       return;
     }
 
-    if (this.beneficiarioData.numeroDocumento.length < 5 || 
-        this.beneficiarioData.numeroDocumento.length > 10) {
+    if (this.beneficiarioData.numeroDocumento.length < 5 ||
+      this.beneficiarioData.numeroDocumento.length > 10) {
       alert('El número de identificación debe tener entre 5 y 10 dígitos');
       return;
     }
@@ -148,7 +152,18 @@ export class BeneficiarioGiroComponent implements OnInit {
       return;
     }
 
-    this.showConfirmDialog = true;
+    this.getListaRestrivtivaService.getClientListaRestrictiva(this.beneficiarioData.tipoDocumento, this.beneficiarioData.numeroDocumento).subscribe({
+      next: (dataBeneficiario) => {
+        if (dataBeneficiario?.data) {
+          this.showConfirmDialog = true;
+        } else {
+          alert('El usuario tiene reportes y esta en listas restrictivas, por lo que no se puede realizar la transacción')
+        }
+      },
+      error: () => {
+        alert('Ocurrió un error al consultar el beneficiario')
+      },
+    });
   }
 
   onConfirmEmitir() {
@@ -158,7 +173,7 @@ export class BeneficiarioGiroComponent implements OnInit {
     // Simular proceso de carga
     setTimeout(() => {
       this.isLoading = false;
-      
+
       // Actualizar datos del giro
       this.giroDataService.updateGiroData({
         tipoDocumentoBeneficiario: this.beneficiarioData.tipoDocumento,

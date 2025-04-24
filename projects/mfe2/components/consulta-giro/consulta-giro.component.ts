@@ -6,7 +6,7 @@ import {
   TipoIdentificacionService,
   TipoIdentificacion,
 } from '../../services/emision/tipo-identificacion.service';
-import { GteClienteService } from '../../services/emision/get-cliente.service';
+import { GetClienteService } from '../../services/emision/get-cliente.service';
 
 interface ConsultaData {
   nombreCliente: string;
@@ -37,7 +37,7 @@ export class ConsultaGiroComponent implements OnInit {
   constructor(
     private giroDataService: GiroDataService,
     private tipoIdentificacionService: TipoIdentificacionService,
-    private gteClientInfoService: GteClienteService
+    private getClientInfoService: GetClienteService
 
   ) {
     // Recuperar datos guardados si existen
@@ -114,12 +114,12 @@ export class ConsultaGiroComponent implements OnInit {
     this.consultaData = null;
     this.datosListos.emit(false);
 
-    this.gteClientInfoService.getClienteInfo(this.selectedTipoId, this.numeroIdentificacion).subscribe({
+    this.getClientInfoService.getClienteInfo(this.selectedTipoId, this.numeroIdentificacion).subscribe({
       next: (data) => {
         this.consultaData = {
-          nombreCliente: data?.data?.nombre,
-          telefono: data?.data?.celular,
-          email: data?.data?.email
+          nombreCliente: data?.nombre,
+          telefono: data?.celular,
+          email: data?.email
         }
         this.giroDataService.updateGiroData({
           tipoSolicitud: this.selectedTipoSolicitud,
@@ -128,7 +128,7 @@ export class ConsultaGiroComponent implements OnInit {
           nombreSolicitante: this?.consultaData?.nombreCliente,
           telefonoSolicitante: this?.consultaData?.telefono,
           emailSolicitante: this?.consultaData?.email,
-          cuentaOrigen: '',
+          cuentaOrigen: null,
           valorGiro: 0,
           codigoOficina: '',
           nombreOficina: '',

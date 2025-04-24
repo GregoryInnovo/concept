@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GiroDataService } from '../../services/storage/giro-data.service';
+import { GetCuentasService, ResponseCuentas } from '../../services/emision/get-cuentas.service';
 
 interface GiroData {
   tipoSolicitud: string;
@@ -10,7 +11,7 @@ interface GiroData {
   nombreSolicitante: string;
   telefonoSolicitante: string;
   emailSolicitante: string;
-  cuentaOrigen?: string;
+  cuentaOrigen?: ResponseCuentas | null;
   valorGiro?: number;
   codigoOficina?: string;
   nombreOficina?: string;
@@ -36,7 +37,7 @@ export class ValorGiroComponent {
   @Output() valorConfirmado = new EventEmitter<boolean>();
 
   valorGiro: number = 0;
-  cuentaOrigen: string = '';
+  cuentaOrigen: ResponseCuentas | null = null;
   oficinaPagoSeleccionada: string = '';
   isLoading: boolean = false;
   datosCalculados: boolean = false;
@@ -48,14 +49,11 @@ export class ValorGiroComponent {
   gmfIvaComision: number = 0;
   valorTotal: number = 0;
 
-  cuentasDisponibles = [
-    '1234 - Cuenta Corriente',
-    '5678 - Cuenta de Ahorros'
-  ];
+  cuentasDisponibles: ResponseCuentas[] = []
 
   oficinasPago = [
     '501 Oficina Santa Barbara',
-    '502 Oficina Galerias', 
+    '502 Oficina Galerias',
     '503 Oficina Avenida Chile',
     '504 Oficina Niza',
     '505 Oficina Centro Internacional',
@@ -126,21 +124,23 @@ export class ValorGiroComponent {
     '161 Oficina Virtual'
   ];
 
-  constructor(private giroDataService: GiroDataService) {
+  constructor(
+    private giroDataService: GiroDataService,
+    private getCuentasService: GetCuentasService
+  ) {
     // Recuperar datos guardados si existen
     const savedData = this.giroDataService.getGiroData();
     if (savedData) {
       this.valorGiro = savedData.valorGiro || 0;
-      this.cuentaOrigen = savedData.cuentaOrigen || '';
       this.oficinaPagoSeleccionada = savedData.nombreOficina || '';
-      
+
       // Recuperar valores de impuestos
       this.valorComision = savedData.comision || 0;
       this.ivaComision = savedData.ivaComision || 0;
       this.gmfComision = savedData.gmfComision || 0;
       this.gmfIvaComision = savedData.gmfIva || 0;
       this.valorTotal = savedData.valorTotal || 0;
-      
+
       // Si hay datos guardados, marcar como calculados
       if (this.valorTotal > 0) {
         this.datosCalculados = true;
@@ -149,11 +149,53 @@ export class ValorGiroComponent {
     }
   }
 
+  ngOnInit(): void {
+    const savedData = this.giroDataService.getGiroData();
+    if (savedData) {
+      this.getCuentasService.getClientCuentas(savedData.tipoDocumentoSolicitante, savedData.numeroDocumentoSolicitante).subscribe({
+        next: (tipos) => {
+          this.cuentasDisponibles = tipos;
+          if (savedData.cuentaOrigen?.numeroCuenta) {
+            this.cuentaOrigen = tipos.find(
+              cuenta => cuenta.numeroCuenta === savedData.cuentaOrigen?.numeroCuenta
+            ) || null;
+          }
+        },
+        error: () => {
+          this.cuentasDisponibles = [];
+        },
+      });
+    }
+  }
+
+  cleanFields(): void {
+    this.datosCalculados = false
+    this.valorComision = 0
+    this.ivaComision = 0
+    this.gmfComision = 0
+    this.gmfIvaComision = 0
+    // Actualizar los datos del giro
+    const currentData = this.giroDataService.getGiroData();
+    if (currentData) {
+      this.giroDataService.updateGiroData({
+        ...currentData,
+        valorGiro: this.valorGiro,
+        cuentaOrigen: this.cuentaOrigen,
+        nombreOficina: this.oficinaPagoSeleccionada,
+        comision: this.valorComision,
+        ivaComision: this.ivaComision,
+        gmfComision: this.gmfComision,
+        gmfIva: this.gmfIvaComision,
+        valorTotal: this.valorTotal
+      });
+    }
+  }
+
   consultarImpuestos(): void {
     if (this.valorGiro > 0 && this.cuentaOrigen && this.oficinaPagoSeleccionada) {
       this.isLoading = true;
       this.datosCalculados = false;
-      
+
       // Simulando una llamada a API con setTimeout
       setTimeout(() => {
         // Aquí en el futuro se llamaría a un servicio para obtener los valores de comisión, IVA, GMF, etc.
@@ -164,7 +206,7 @@ export class ValorGiroComponent {
 
         // Calcular el valor total sumando los valores anteriores y el valor del giro
         this.valorTotal = +this.valorComision + +this.ivaComision + +this.gmfComision + +this.gmfIvaComision + +this.valorGiro;
-        
+
         // Actualizar los datos del giro
         const currentData = this.giroDataService.getGiroData();
         if (currentData) {
@@ -209,6 +251,7 @@ export class ValorGiroComponent {
     try {
       const input = event.target as HTMLInputElement;
       this.valorTotal = +this.valorComision + +this.ivaComision + +this.gmfComision + +this.gmfIvaComision + +input.value
+      this.cleanFields()
     } catch (error) {
       throw error
     }
