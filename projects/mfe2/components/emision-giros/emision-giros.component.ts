@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ConsultaGiroComponent } from '../consulta-giro/consulta-giro.component';
 import { ValorGiroComponent } from '../valor-giro/valor-giro.component';
 import { BeneficiarioGiroComponent } from '../beneficiario-giro/beneficiario-giro.component';
-import { GiroDataService } from '../../services/giro-data.service';
+import { GiroDataService } from '../../services/storage/giro-data.service';
 
 @Component({
   selector: 'app-emision-giros',

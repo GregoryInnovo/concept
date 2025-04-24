@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GiroDataService } from '../../services/giro-data.service';
+import { GiroDataService } from '../../services/storage/giro-data.service';
 import {
   TipoIdentificacionService,
   TipoIdentificacion,
-} from '../../services/tipo-identificacion.service';
+} from '../../services/emision/tipo-identificacion.service';
+import { GteClienteService } from '../../services/emision/get-cliente.service';
 
 interface ConsultaData {
   nombreCliente: string;
@@ -35,7 +36,9 @@ export class ConsultaGiroComponent implements OnInit {
 
   constructor(
     private giroDataService: GiroDataService,
-    private tipoIdentificacionService: TipoIdentificacionService
+    private tipoIdentificacionService: TipoIdentificacionService,
+    private gteClientInfoService: GteClienteService
+
   ) {
     // Recuperar datos guardados si existen
     const savedData = this.giroDataService.getGiroData();
@@ -111,34 +114,38 @@ export class ConsultaGiroComponent implements OnInit {
     this.consultaData = null;
     this.datosListos.emit(false);
 
-    // Simulando una llamada a API con setTimeout
-    setTimeout(() => {
-      this.consultaData = {
-        nombreCliente: 'JUAN PÉREZ GONZÁLEZ',
-        telefono: '3001234567',
-        email: 'juan.perez@example.com',
-      };
-
-      this.giroDataService.updateGiroData({
-        tipoSolicitud: this.selectedTipoSolicitud,
-        tipoDocumentoSolicitante: this.selectedTipoId,
-        numeroDocumentoSolicitante: this.numeroIdentificacion,
-        nombreSolicitante: this.consultaData.nombreCliente,
-        telefonoSolicitante: this.consultaData.telefono,
-        emailSolicitante: this.consultaData.email,
-        cuentaOrigen: '',
-        valorGiro: 0,
-        codigoOficina: '',
-        nombreOficina: '',
-        regional: 'Sur',
-        cajero: 'LMDR4836',
-        fechaEmision: new Date(),
-      });
-
-      this.isLoading = false;
-      // Emitimos que los datos están listos
-      this.datosListos.emit(true);
-    }, 1500);
-    // }, 0);
+    this.gteClientInfoService.getClienteInfo(this.selectedTipoId, this.numeroIdentificacion).subscribe({
+      next: (data) => {
+        this.consultaData = {
+          nombreCliente: data?.data?.nombre,
+          telefono: data?.data?.celular,
+          email: data?.data?.email
+        }
+        this.giroDataService.updateGiroData({
+          tipoSolicitud: this.selectedTipoSolicitud,
+          tipoDocumentoSolicitante: this.selectedTipoId,
+          numeroDocumentoSolicitante: this.numeroIdentificacion,
+          nombreSolicitante: this?.consultaData?.nombreCliente,
+          telefonoSolicitante: this?.consultaData?.telefono,
+          emailSolicitante: this?.consultaData?.email,
+          cuentaOrigen: '',
+          valorGiro: 0,
+          codigoOficina: '',
+          nombreOficina: '',
+          regional: 'Sur',
+          cajero: 'LMDR4836',
+          fechaEmision: new Date(),
+        });
+  
+        this.isLoading = false;
+        // Emitimos que los datos están listos
+        this.datosListos.emit(true);
+      },
+      error: () => {
+        this.consultaData = null;
+        this.isLoading = false;
+        alert('El usaurio ingresado no se encuentra')
+      },
+    });
   }
 }
