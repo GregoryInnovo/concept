@@ -172,6 +172,13 @@ export class BeneficiarioGiroComponent implements OnInit {
     this.showConfirmDialog = false;
     this.isLoading = true;
 
+    // Sincronizar datos del formulario con el servicio antes de emitir
+    this.giroDataService.updateGiroData({
+      tipoDocumentoBeneficiario: this.beneficiarioData.tipoDocumento,
+      numeroDocumentoBeneficiario: this.beneficiarioData.numeroDocumento,
+      nombreBeneficiario: this.beneficiarioData.nombreCliente
+    });
+
     // Obtener datos del giro
     const giroData = this.giroDataService.getGiroData();
     if (!giroData) {
@@ -197,16 +204,37 @@ export class BeneficiarioGiroComponent implements OnInit {
       return;
     }
 
+    // Validar campos requeridos de beneficiario y codigoTipo
+    const identificacionBeneficiario = giroData.numeroDocumentoBeneficiario;
+    const nombreBeneficiario = giroData.nombreBeneficiario;
+    const tipoIdentificacionBeneficiario = giroData.tipoDocumentoBeneficiario;
+    let codigoTipo = giroData.tipoSolicitud || 'N';
+    if (codigoTipo.length > 1) {
+      codigoTipo = codigoTipo.charAt(0); // Solo el primer caracter
+    }
+
+    if (!identificacionBeneficiario || !nombreBeneficiario || !tipoIdentificacionBeneficiario) {
+      this.isLoading = false;
+      alert('Debe completar todos los campos obligatorios del beneficiario.');
+      return;
+    }
+    if (!codigoTipo || codigoTipo.length !== 1) {
+      this.isLoading = false;
+      alert('El código de tipo debe tener exactamente 1 carácter.');
+      return;
+    }
+
     // Construir el body para el endpoint
     const body: EmitirGiroRequest = {
-      idGiro: giroData.numeroGiro ? parseInt(giroData.numeroGiro, 10) : 0,
+      // idGiro: giroData.numeroGiro ? parseInt(giroData.numeroGiro, 10) : 0,
+      idGiro: 1073741824,
       codigoEstado: 'P', // Procesando
-      codigoTipo: giroData.tipoSolicitud || 'N',
+      codigoTipo: codigoTipo,
       nombreOficina: giroData.nombreOficina || 'Oficina',
       usuarioRed: giroData.cajero || 'usuario',
-      identificacionBeneficiario: giroData.numeroDocumentoBeneficiario,
-      nombreBeneficiario: giroData.nombreBeneficiario,
-      tipoIdentificacionBeneficiario: giroData.tipoDocumentoBeneficiario,
+      identificacionBeneficiario: identificacionBeneficiario,
+      nombreBeneficiario: nombreBeneficiario,
+      tipoIdentificacionBeneficiario: tipoIdentificacionBeneficiario.split(' - ')[0],
       identificacionSolicitante: giroData.numeroDocumentoSolicitante,
       nombreSolicitante: giroData.nombreSolicitante,
       tipoIdentificacionSolicitante: giroData.tipoDocumentoSolicitante,
