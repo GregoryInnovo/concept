@@ -114,6 +114,8 @@ export class ConsultaGiroComponent implements OnInit {
     this.consultaData = null;
     this.datosListos.emit(false);
 
+    setTimeout(() => {
+
     this.getClientInfoService.getClienteInfo(this.selectedTipoId, this.numeroIdentificacion).subscribe({
       next: (data) => {
         this.consultaData = {
@@ -147,5 +149,6 @@ export class ConsultaGiroComponent implements OnInit {
         alert('El usaurio ingresado no se encuentra')
       },
     });
+  }, 2000); // 2 segundos de carga simulada
   }
 }

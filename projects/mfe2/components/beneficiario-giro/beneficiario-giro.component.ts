@@ -6,6 +6,7 @@ import { GiroDataService } from '../../services/storage/giro-data.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { ListaRestrictivaService } from '../../services/emision/lista-restrictiva.service';
+import { EmitirGiroService, EmitirGiroRequest } from '../../services/emision/emitir-giro.service';
 
 @Component({
   selector: 'app-beneficiario-giro',
@@ -59,7 +60,8 @@ export class BeneficiarioGiroComponent implements OnInit {
 
   constructor(
     private giroDataService: GiroDataService,
-    private getListaRestrivtivaService: ListaRestrictivaService
+    private getListaRestrivtivaService: ListaRestrictivaService,
+    private emitirGiroService: EmitirGiroService
   ) { }
 
   ngOnInit() {
@@ -170,23 +172,83 @@ export class BeneficiarioGiroComponent implements OnInit {
     this.showConfirmDialog = false;
     this.isLoading = true;
 
-    // Simular proceso de carga
-    setTimeout(() => {
+    // Obtener datos del giro
+    const giroData = this.giroDataService.getGiroData();
+    if (!giroData) {
       this.isLoading = false;
+      alert('No hay datos del giro para emitir.');
+      return;
+    }
 
-      // Actualizar datos del giro
-      this.giroDataService.updateGiroData({
-        tipoDocumentoBeneficiario: this.beneficiarioData.tipoDocumento,
-        numeroDocumentoBeneficiario: this.beneficiarioData.numeroDocumento,
-        nombreBeneficiario: this.beneficiarioData.nombreCliente,
-        tipoDocumentoAutorizado: this.autorizadoData.tipoDocumento || undefined,
-        numeroDocumentoAutorizado: this.autorizadoData.numeroDocumento || undefined,
-        nombreAutorizado: this.autorizadoData.nombreAutorizado || undefined,
-        numeroGiro: Math.floor(Math.random() * 1000000).toString().padStart(6, '0')
-      });
+    // Validaciones para evitar error 400
+    if (!giroData.emailSolicitante || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(giroData.emailSolicitante)) {
+      this.isLoading = false;
+      alert('El email del solicitante debe ser válido.');
+      return;
+    }
+    if (giroData.valorTotal <= 0) {
+      this.isLoading = false;
+      alert('El total a pagar debe ser mayor que cero.');
+      return;
+    }
+    if (giroData.valorGiro <= 0) {
+      this.isLoading = false;
+      alert('El valor de la solicitud debe ser mayor que cero.');
+      return;
+    }
 
-      this.showComprobante = true;
-    }, 2000); // 2 segundos de carga simulada
+    // Construir el body para el endpoint
+    const body: EmitirGiroRequest = {
+      idGiro: giroData.numeroGiro ? parseInt(giroData.numeroGiro, 10) : 0,
+      codigoEstado: 'P', // Procesando
+      codigoTipo: giroData.tipoSolicitud || 'N',
+      nombreOficina: giroData.nombreOficina || 'Oficina',
+      usuarioRed: giroData.cajero || 'usuario',
+      identificacionBeneficiario: giroData.numeroDocumentoBeneficiario,
+      nombreBeneficiario: giroData.nombreBeneficiario,
+      tipoIdentificacionBeneficiario: giroData.tipoDocumentoBeneficiario,
+      identificacionSolicitante: giroData.numeroDocumentoSolicitante,
+      nombreSolicitante: giroData.nombreSolicitante,
+      tipoIdentificacionSolicitante: giroData.tipoDocumentoSolicitante,
+      emailSolicitante: giroData.emailSolicitante,
+      celularSolicitante: giroData.telefonoSolicitante,
+      valorSolicitud: giroData.valorGiro,
+      valorComision: giroData.comision,
+      ivaComision: giroData.ivaComision,
+      gmfIvaComision: giroData.gmfIva,
+      gmfComision: giroData.gmfComision,
+      totalPagar: giroData.valorTotal,
+      cuentaOrigen: giroData.cuentaOrigen ? giroData.cuentaOrigen.numeroCuenta : ''
+    };
+
+    this.emitirGiroService.emitirGiro(body).subscribe({
+      next: (success) => {
+        this.isLoading = false;
+        if (success) {
+          // Actualizar datos del giro
+          this.giroDataService.updateGiroData({
+            tipoDocumentoBeneficiario: this.beneficiarioData.tipoDocumento,
+            numeroDocumentoBeneficiario: this.beneficiarioData.numeroDocumento,
+            nombreBeneficiario: this.beneficiarioData.nombreCliente,
+            tipoDocumentoAutorizado: this.autorizadoData.tipoDocumento || undefined,
+            numeroDocumentoAutorizado: this.autorizadoData.numeroDocumento || undefined,
+            nombreAutorizado: this.autorizadoData.nombreAutorizado || undefined,
+            numeroGiro: giroData.numeroGiro
+          });
+          this.showComprobante = true;
+        } else {
+          alert('No se pudo emitir el giro.');
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        if (error.error && error.error.data) {
+          alert('Error validando campos: ' + (Array.isArray(error.error.data) ? error.error.data.join(', ') : error.error.data));
+        } else {
+          alert('Ocurrió un error al emitir el giro.');
+        }
+      }
+    });
   }
 
   onCancelEmitir() {
