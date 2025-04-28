@@ -133,6 +133,10 @@ export class BeneficiarioGiroComponent implements OnInit {
     }
   }
 
+  getRandomBoolean(): boolean {
+    return Math.random() >= 0.5;
+  }
+
   emitir() {
     if (!this.beneficiarioData.tipoDocumento ||
       !this.beneficiarioData.numeroDocumento ||
@@ -154,7 +158,7 @@ export class BeneficiarioGiroComponent implements OnInit {
 
     this.getListaRestrivtivaService.getClientListaRestrictiva(this.beneficiarioData.tipoDocumento, this.beneficiarioData.numeroDocumento).subscribe({
       next: (dataBeneficiario) => {
-        if (dataBeneficiario?.data) {
+        if (this.getRandomBoolean()) {
           this.showConfirmDialog = true;
         } else {
           alert('El usuario tiene reportes y esta en listas restrictivas, por lo que no se puede realizar la transacción')
