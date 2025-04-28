@@ -6,6 +6,7 @@ import { GiroDataService } from '../../services/storage/giro-data.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { ListaRestrictivaService } from '../../services/emision/lista-restrictiva.service';
+import { TipoIdentificacion, TipoIdentificacionService } from '../../services/emision/tipo-identificacion.service';
 
 @Component({
   selector: 'app-beneficiario-giro',
@@ -42,27 +43,23 @@ export class BeneficiarioGiroComponent implements OnInit {
     nombreAutorizado: ''
   };
 
-  tiposDocumentoBeneficiario = [
-    'CC - CEDULA DE CIUDADANIA',
-    'CE - CEDULA DE EXTRANGERIA',
-    'PT - PERMISO POR PROTECCIÓN TEMPORAL',
-    'NIT - EMPRESA'
-  ];
-
-  tiposDocumentoAutorizado = [
-    'CC - CEDULA DE CIUDADANIA',
-    'CE - CEDULA DE EXTRANGERIA',
-    'PA - PASAPORTE',
-    'PPT - PERMISO POR PROTECCIÓN TEMPORAL',
-    'NIT - NUMERO DE IDENTIFICACION TRIBUTARIA'
-  ];
+  tiposIdentificacion: TipoIdentificacion[] = [];
 
   constructor(
     private giroDataService: GiroDataService,
-    private getListaRestrivtivaService: ListaRestrictivaService
+    private getListaRestrivtivaService: ListaRestrictivaService,
+    private tipoIdentificacionService: TipoIdentificacionService,
   ) { }
 
   ngOnInit() {
+    this.tipoIdentificacionService.getTiposIdentificacion().subscribe({
+      next: (tipos) => {
+        this.tiposIdentificacion = tipos;
+      },
+      error: () => {
+        this.tiposIdentificacion = [];
+      },
+    });
     const savedData = this.giroDataService.getGiroData();
     if (savedData) {
       // Guardar datos del solicitante para mostrar en el resumen
@@ -153,6 +150,14 @@ export class BeneficiarioGiroComponent implements OnInit {
 
     if (this.beneficiarioData.nombreCliente.length > 20) {
       alert('El nombre del beneficiario no puede exceder los 20 caracteres');
+      return;
+    }
+
+    const idCliente = `${this.solicitanteData.tipoDocumento}${this.solicitanteData.numeroDocumento}`
+    const idBeneficiario = `${this.beneficiarioData.tipoDocumento}${this.beneficiarioData.numeroDocumento}`
+
+    if (idCliente === idBeneficiario) {
+      alert('No puedes agregar al cliente como beneficiario')
       return;
     }
 
