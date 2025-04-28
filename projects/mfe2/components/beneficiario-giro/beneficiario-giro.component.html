@@ -59,9 +59,9 @@
     <div class="form-group">
       <label for="tipoDoc">TIPO DOCUMENTO</label>
       <select id="tipoDoc" [(ngModel)]="beneficiarioData.tipoDocumento" class="form-control" required>
-        <option value="" disabled selected>Seleccione tipo de documento</option>
-        @for (tipo of tiposDocumentoBeneficiario; track tipo) {
-        <option [value]="tipo">{{ tipo }}</option>
+        <option value="" disabled selected>Seleccione tipo de identificación</option>
+        @for (tipo of tiposIdentificacion; track tipo.codigo) {
+        <option [value]="tipo.codigo">{{ tipo.codigo }} - {{ tipo.descripcion }}</option>
         }
       </select>
     </div>
