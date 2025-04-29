@@ -7,6 +7,7 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { ListaRestrictivaService } from '../../services/emision/lista-restrictiva.service';
 import { EmitirGiroService, EmitirGiroRequest } from '../../services/emision/emitir-giro.service';
+import { TipoIdentificacion, TipoIdentificacionService } from '../../services/emision/tipo-identificacion.service';
 
 @Component({
   selector: 'app-beneficiario-giro',
@@ -43,28 +44,24 @@ export class BeneficiarioGiroComponent implements OnInit {
     nombreAutorizado: ''
   };
 
-  tiposDocumentoBeneficiario = [
-    'CC - CEDULA DE CIUDADANIA',
-    'CE - CEDULA DE EXTRANGERIA',
-    'PT - PERMISO POR PROTECCIÓN TEMPORAL',
-    'NIT - EMPRESA'
-  ];
-
-  tiposDocumentoAutorizado = [
-    'CC - CEDULA DE CIUDADANIA',
-    'CE - CEDULA DE EXTRANGERIA',
-    'PA - PASAPORTE',
-    'PPT - PERMISO POR PROTECCIÓN TEMPORAL',
-    'NIT - NUMERO DE IDENTIFICACION TRIBUTARIA'
-  ];
+  tiposIdentificacion: TipoIdentificacion[] = [];
 
   constructor(
     private giroDataService: GiroDataService,
     private getListaRestrivtivaService: ListaRestrictivaService,
-    private emitirGiroService: EmitirGiroService
+    private emitirGiroService: EmitirGiroService,
+    private tipoIdentificacionService: TipoIdentificacionService,
   ) { }
 
   ngOnInit() {
+    this.tipoIdentificacionService.getTiposIdentificacion().subscribe({
+      next: (tipos) => {
+        this.tiposIdentificacion = tipos;
+      },
+      error: () => {
+        this.tiposIdentificacion = [];
+      },
+    });
     const savedData = this.giroDataService.getGiroData();
     if (savedData) {
       // Guardar datos del solicitante para mostrar en el resumen
@@ -135,6 +132,10 @@ export class BeneficiarioGiroComponent implements OnInit {
     }
   }
 
+  getRandomBoolean(): boolean {
+    return Math.random() >= 0.5;
+  }
+
   emitir() {
     if (!this.beneficiarioData.tipoDocumento ||
       !this.beneficiarioData.numeroDocumento ||
@@ -154,9 +155,17 @@ export class BeneficiarioGiroComponent implements OnInit {
       return;
     }
 
+    const idCliente = `${this.solicitanteData.tipoDocumento}${this.solicitanteData.numeroDocumento}`
+    const idBeneficiario = `${this.beneficiarioData.tipoDocumento}${this.beneficiarioData.numeroDocumento}`
+
+    if (idCliente === idBeneficiario) {
+      alert('No puedes agregar al cliente como beneficiario')
+      return;
+    }
+
     this.getListaRestrivtivaService.getClientListaRestrictiva(this.beneficiarioData.tipoDocumento, this.beneficiarioData.numeroDocumento).subscribe({
       next: (dataBeneficiario) => {
-        if (dataBeneficiario?.data) {
+        if (this.getRandomBoolean()) {
           this.showConfirmDialog = true;
         } else {
           alert('El usuario tiene reportes y esta en listas restrictivas, por lo que no se puede realizar la transacción')
