@@ -64,3 +64,5 @@ npm run run:all
 ng build mfe2
 
 ng build mfe2 --configuration production
+
+npm run run:all
