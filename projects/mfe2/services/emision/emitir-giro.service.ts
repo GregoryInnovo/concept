@@ -34,7 +34,10 @@ export interface EmitirGiroResponse {
 
 @Injectable({ providedIn: 'root' })
 export class EmitirGiroService {
-  private apiUrl = 'emision/emitir-giro';
+  // URL base del backend (cambiar el path según el endpoint real)
+  // Endpoint completo para emitir giro
+  // private readonly apiUrl = 'http://ec2-3-19-197-200.us-east-2.compute.amazonaws.com:8081/api/emision/emitir-giro';
+  private readonly apiUrl = 'http://localhost:8080/api/emision/emitir-giro';
 
   constructor(private http: HttpClient) {}
 
