@@ -5,7 +5,6 @@ import { ComprobanteGiroComponent } from '../comprobante-giro/comprobante-giro.c
 import { GiroDataService } from '../../services/storage/giro-data.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
-import { ListaRestrictivaService } from '../../services/emision/lista-restrictiva.service';
 import { EmitirGiroService, EmitirGiroRequest } from '../../services/emision/emitir-giro.service';
 import { TipoIdentificacion, TipoIdentificacionService } from '../../services/emision/tipo-identificacion.service';
 
@@ -49,7 +48,6 @@ export class BeneficiarioGiroComponent implements OnInit {
 
   constructor(
     private giroDataService: GiroDataService,
-    private getListaRestrivtivaService: ListaRestrictivaService,
     private emitirGiroService: EmitirGiroService,
     private tipoIdentificacionService: TipoIdentificacionService,
   ) { }
@@ -58,6 +56,7 @@ export class BeneficiarioGiroComponent implements OnInit {
     this.tipoIdentificacionService.getTiposIdentificacion().subscribe({
       next: (tipos) => {
         this.tiposIdentificacion = tipos;
+        this.tiposIdentificacion.push({ codigo: 'TI', descripcion: 'Tarjeta de Identidad' })
       },
       error: () => {
         this.tiposIdentificacion = [];
@@ -135,10 +134,6 @@ export class BeneficiarioGiroComponent implements OnInit {
     }
   }
 
-  getRandomBoolean(): boolean {
-    return Math.random() >= 0.5;
-  }
-
   confirmEmit = () => {
     this.showResumen = false;
     this.showConfirmDialog = true
@@ -163,6 +158,10 @@ export class BeneficiarioGiroComponent implements OnInit {
       return;
     }
 
+    if (this.beneficiarioData.tipoDocumento === 'TI') {
+      alert('El beneficiario ingresado es menor de edad, pero puede emitir el giro')
+    }
+
     const idCliente = `${this.solicitanteData.tipoDocumento}${this.solicitanteData.numeroDocumento}`
     const idBeneficiario = `${this.beneficiarioData.tipoDocumento}${this.beneficiarioData.numeroDocumento}`
 
@@ -177,18 +176,7 @@ export class BeneficiarioGiroComponent implements OnInit {
       nombreBeneficiario: this.beneficiarioData.nombreCliente
     });
 
-    this.getListaRestrivtivaService.getClientListaRestrictiva(this.beneficiarioData.tipoDocumento, this.beneficiarioData.numeroDocumento).subscribe({
-      next: (dataBeneficiario) => {
-        if (this.getRandomBoolean()) {
-          this.showResumen = true;
-        } else {
-          alert('El usuario tiene reportes y esta en listas restrictivas, por lo que no se puede realizar la transacción')
-        }
-      },
-      error: () => {
-        alert('Ocurrió un error al consultar el beneficiario')
-      },
-    });
+    this.showResumen = true;
   }
 
   onConfirmEmitir() {
@@ -301,6 +289,10 @@ export class BeneficiarioGiroComponent implements OnInit {
 
   onCancelEmitir() {
     this.showConfirmDialog = false;
+  }
+
+  onCerrarResumen = () => {
+    this.showResumen = false;
   }
 
   onCerrarComprobante() {

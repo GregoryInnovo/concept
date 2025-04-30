@@ -49,14 +49,6 @@
   <div class="beneficiario-section">
     <h3 class="section-title">DATOS DEL BENEFICIARIO</h3>
 
-    <!-- Checkbox Autorizado -->
-    <div class="form-group" *ngIf="solicitanteData">
-      <div class="autorizado-checkbox" [class.checked]="isAutorizadoChecked">
-        <label>AUTORIZADO</label>
-        <input type="checkbox" [checked]="isAutorizadoChecked" disabled />
-      </div>
-    </div>
-
     <div class="form-group">
       <label for="tipoDoc">TIPO DOCUMENTO</label>
       <select id="tipoDoc" [(ngModel)]="beneficiarioData.tipoDocumento" class="form-control" required>
@@ -92,7 +84,7 @@
 }
 
 @if (showResumen) {
-<app-comprobante-giro (cerrarComprobante)="onCerrarComprobante()" [isResumen]="true" [closeResume]="confirmEmit" />
+<app-comprobante-giro (cerrarComprobante)="onCerrarResumen()" [isResumen]="true" [closeResume]="confirmEmit" />
 }
 @if (showConfirmDialog) {
 <app-confirmation-dialog title="Confirmar Emisión"
