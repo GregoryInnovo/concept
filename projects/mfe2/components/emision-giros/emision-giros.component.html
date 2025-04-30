@@ -1,39 +1,21 @@
 <div class="main-container">
-  <h1>Emisión de Giros</h1>
-  
-  <div class="stepper-container">
-    <div class="step-connector"></div>
-    @for (step of steps; track step.number) {
-      <div class="step" [class.active]="isStepActive(step.number)" [class.completed]="isStepCompleted(step.number)">
-        <div class="step-number">{{step.number}}</div>
-        <div class="step-title">{{step.title}}</div>
-        <div class="step-description">{{step.description}}</div>
-      </div>
-    }
-  </div>
-
   <div class="step-content">
-    @if (currentStep === 1) {
-      <app-consulta-giro (datosListos)="actualizarEstadoPaso($event)"></app-consulta-giro>
-    }
-    @if (currentStep === 2) {
-      <app-valor-giro 
-        [clientData]="giroDataService.getGiroData()"
-        (valorConfirmado)="actualizarEstadoPaso($event)">
-      </app-valor-giro>
+    <app-consulta-giro (datosListos)="actualizarEstadoPaso($event)" [nextStep]="nextStep" [restartProcess]="reiniciarState"></app-consulta-giro>
+    @if (pasoConsultaCompleto) {
+    <app-valor-giro [clientData]="giroDataService.getGiroData()" (valorConfirmado)="actualizarEstadoPaso($event)"
+      [nextStep]="nextStep" [prevStep]="previousStep">
+    </app-valor-giro>
     }
     @if (currentStep === 3) {
-      <app-beneficiario-giro 
-        (beneficiarioConfirmado)="nextStep()"
-        (reiniciarProceso)="currentStep = 1">
-      </app-beneficiario-giro>
+    <app-beneficiario-giro (beneficiarioConfirmado)="nextStep()" (reiniciarProceso)="currentStep = 1">
+    </app-beneficiario-giro>
     }
   </div>
 
-  <div class="navigation-buttons">
+  <!-- <div class="navigation-buttons">
     <button class="btn-previous" (click)="previousStep()" [disabled]="currentStep === 1">Anterior</button>
     @if (currentStep !== 3) {
-      <button class="btn-next" (click)="nextStep()" [disabled]="!canProceedToNextStep()">Siguiente</button>
+    <button class="btn-next" (click)="nextStep()" [disabled]="!canProceedToNextStep()">Siguiente</button>
     }
-  </div>
-</div> 
+  </div> -->
+</div>

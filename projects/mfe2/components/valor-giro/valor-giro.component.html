@@ -5,7 +5,8 @@
       <!-- Row 1 -->
       <div class="info-group">
         <label>TIPO SOLICITUD</label>
-        <div class="info-value">{{ clientData?.tipoSolicitud }}</div>
+        <div class="info-value">{{ clientData?.tipoSolicitud?.codigo }} - {{ clientData?.tipoSolicitud?.descripcion }}
+        </div>
       </div>
       <div class="info-group">
         <label>TIPO DOCUMENTO</label>
@@ -39,6 +40,16 @@
   <!-- Formulario de valor y cuenta -->
   <div class="form-section">
     <div class="form-group">
+      <label for="tipoMoneda">TIPO MONEDA</label>
+      <select id="tipoMoneda" [(ngModel)]="tipoMoneda" class="form-control" (change)="cleanFields()">
+        <option [ngValue]="null" disabled>Seleccione un tipo de moneda</option>
+        <option *ngFor="let tipo of tipoMonedas" [ngValue]="tipo">
+          {{ tipo?.codigo }} - {{ tipo?.descripcion }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
       <label for="valorGiro">VALOR DEL GIRO</label>
       <div class="input-group">
         <span class="currency-symbol">$</span>
@@ -56,19 +67,9 @@
         </option>
       </select>
     </div>
-
-    <div class="form-group">
-      <label for="oficinaPago">OFICINA DE PAGO</label>
-      <select id="oficinaPago" [(ngModel)]="oficinaPagoSeleccionada" class="form-control" (change)="cleanFields()">
-        <option value="" disabled selected>Seleccione una oficina</option>
-        @for (oficina of oficinasPago; track oficina) {
-        <option [value]="oficina">{{ oficina }}</option>
-        }
-      </select>
-    </div>
     <!-- Botón de aceptar -->
     <div class="button-section">
-      <button class="btn-search" (click)="consultarImpuestos()" [disabled]="!cuentaOrigen || !oficinaPagoSeleccionada">
+      <button class="btn-search" (click)="consultarImpuestos()" [disabled]="!cuentaOrigen">
         CONSULTAR
       </button>
     </div>
@@ -86,23 +87,15 @@
   <div class="comision-card">
     <div class="comision-item">
       <label class="comision-label">VALOR DE LA COMISIÓN</label>
-      <div class="comision-value">{{ formatearValor(valorComision) }}</div>
-    </div>
-    <div class="comision-item">
-      <label class="comision-label">I.V.A COMISIÓN</label>
-      <div class="comision-value">{{ formatearValor(ivaComision) }}</div>
-    </div>
-    <div class="comision-item">
-      <label class="comision-label">GMF DEL IVA DE LA COMISIÓN</label>
-      <div class="comision-value">{{ formatearValor(gmfIvaComision) }}</div>
+      <div class="comision-value">{{ formatearValor(valorComision) }} {{ tipoMoneda?.codigo }}</div>
     </div>
     <div class="comision-item">
       <label class="comision-label">GMF DE LA COMISIÓN</label>
-      <div class="comision-value">{{ formatearValor(gmfComision) }}</div>
+      <div class="comision-value">{{ formatearValor(gmfComision) }} {{ tipoMoneda?.codigo }}</div>
     </div>
     <div class="comision-item">
       <label class="total-label">VALOR TOTAL</label>
-      <div class="total-value">{{ formatearValor(valorTotal) }}</div>
+      <div class="total-value">{{ formatearValor(valorTotal) }} {{ tipoMoneda?.codigo }}</div>
     </div>
   </div>
   } }

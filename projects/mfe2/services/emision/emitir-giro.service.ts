@@ -7,7 +7,6 @@ export interface EmitirGiroRequest {
   idGiro: number;
   codigoEstado: string;
   codigoTipo: string;
-  nombreOficina: string;
   usuarioRed: string;
   identificacionBeneficiario: string;
   nombreBeneficiario: string;
@@ -19,8 +18,6 @@ export interface EmitirGiroRequest {
   celularSolicitante: string;
   valorSolicitud: number;
   valorComision: number;
-  ivaComision: number;
-  gmfIvaComision: number;
   gmfComision: number;
   totalPagar: number;
   cuentaOrigen: string;
@@ -36,8 +33,7 @@ export interface EmitirGiroResponse {
 export class EmitirGiroService {
   // URL base del backend (cambiar el path según el endpoint real)
   // Endpoint completo para emitir giro
-  // private readonly apiUrl = 'http://ec2-3-19-197-200.us-east-2.compute.amazonaws.com:8081/api/emision/emitir-giro';
-  private readonly apiUrl = 'http://localhost:8080/api/emision/emitir-giro';
+  private readonly apiUrl = 'emision/emitir-giro';
 
   constructor(private http: HttpClient) {}
 

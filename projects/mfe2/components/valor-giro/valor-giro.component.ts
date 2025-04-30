@@ -3,15 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GiroDataService } from '../../services/storage/giro-data.service';
 import { GetCuentasService, ResponseCuentas } from '../../services/emision/get-cuentas.service';
+import { ResponseTipoGiro } from '../../services/emision/get-tipo-giro.service';
+import { GetTipoMonedaService, ResponseTipoMoneda } from '../../services/emision/get-tipo-moneda.service';
 
 interface GiroData {
-  tipoSolicitud: string;
+  tipoSolicitud: ResponseTipoGiro | null;
   tipoDocumentoSolicitante: string;
   numeroDocumentoSolicitante: string;
   nombreSolicitante: string;
   telefonoSolicitante: string;
   emailSolicitante: string;
   cuentaOrigen?: ResponseCuentas | null;
+  tipoMoneda?: ResponseTipoMoneda | null;
   valorGiro?: number;
   codigoOficina?: string;
   nombreOficina?: string;
@@ -33,112 +36,38 @@ interface GiroData {
   styleUrls: ['./valor-giro.component.css']
 })
 export class ValorGiroComponent {
+  @Input() prevStep!: () => void;
+  @Input() nextStep!: () => void;
   @Input() clientData: GiroData | null = null;
   @Output() valorConfirmado = new EventEmitter<boolean>();
 
   valorGiro: number = 0;
   cuentaOrigen: ResponseCuentas | null = null;
-  oficinaPagoSeleccionada: string = '';
+  tipoMoneda: ResponseTipoMoneda | null = null;
   isLoading: boolean = false;
   datosCalculados: boolean = false;
 
   // Valores calculados
   valorComision: number = 0;
-  ivaComision: number = 0;
   gmfComision: number = 0;
-  gmfIvaComision: number = 0;
   valorTotal: number = 0;
 
   cuentasDisponibles: ResponseCuentas[] = []
-
-  oficinasPago = [
-    '501 Oficina Santa Barbara',
-    '502 Oficina Galerias',
-    '503 Oficina Avenida Chile',
-    '504 Oficina Niza',
-    '505 Oficina Centro Internacional',
-    '507 Oficina Unicentro Bogota',
-    '508 Oficina Ciudad  Salitre',
-    '510 Oficina Calle 80 Bogota',
-    '512 Oficina Principal Bogota',
-    '514 Oficna Plaza de las Américas',
-    '515 Oficna Cedritos',
-    '516 Oficina Chapinero',
-    '523 Oficina Sogamoso',
-    '524 Oficina Villavicencio',
-    '525 Oficina Tunja',
-    '526 Oficina Yopal',
-    '527 Oficina Chia',
-    '528 Oficina Duitama',
-    '100 Buga',
-    '111 Oficina Buenaventura',
-    '102 Oficina  Sur Cali',
-    '103 Oficina Centro Cali',
-    '105 Oficina Sede Nacional Cali',
-    '106 Oficina Imbanaco Cali',
-    '107 Oficina Unicentro Cali',
-    '108 Oficina Chipichape Cali',
-    '109 Oficina Cosmocentro Cali',
-    '115 Oficina Liviana Farallones Cali',
-    '116 Oficina Florencia',
-    '113 Oficina Ibague',
-    '114 Oficina Neiva',
-    '901 Oficina Popayan',
-    '117 Oficina Pasto',
-    '112 Oficina Tulua',
-    '801 Oficina Prado Barranquilla',
-    '802 Oficina Barranquilla Norte',
-    '806 Oficina Calle 93 Barranquilla',
-    '807 Oficina Unico Barranquilla',
-    '808 Oficina Valledupar',
-    '809 Oficina Manga Cartagena',
-    '810 Oficina Santa Marta',
-    '811 Oficina Sincelejo',
-    '812 Oficina Riohacha',
-    '605 Oficina Cartago',
-    '606 Oficina Manizales Centro',
-    '602 Oficina Armenia Centro',
-    '607 Oficina Manizales El Cable',
-    '603 Oficina Pereira Centro',
-    '604 Oficina Prometeo',
-    '601 Oficina Armenia Norte',
-    '317 Oficina Barrancabermeja',
-    '312 Oficina Bucaramanga',
-    '313 Oficina Cucuta',
-    '316 Oficina Envigado',
-    '318 Oficina Mayorca',
-    '301 Oficina Ayacucho Medellin',
-    '302 Oficina Oviedo Medellin',
-    '304 Oficina Las Americas Medellin',
-    '305 Oficina La 33 Medellin',
-    '320 Oficina Monteria',
-    '314 Oficina Pamplona',
-    '311 Oficina Quibdo',
-    '315 Oficina Rionegro',
-    '701 Oficina Apartado',
-    '319 Oficina Floridablanca',
-    '401 Oficina Centro Palmira',
-    '402 Oficina Versalles Palmira',
-    '404 Oficina Llanogrande Palmira',
-    '160 Banca Express',
-    '161 Oficina Virtual'
-  ];
+  tipoMonedas: ResponseTipoMoneda[] = []
 
   constructor(
     private giroDataService: GiroDataService,
-    private getCuentasService: GetCuentasService
+    private getCuentasService: GetCuentasService,
+    private getTipoMonedaService: GetTipoMonedaService
   ) {
     // Recuperar datos guardados si existen
     const savedData = this.giroDataService.getGiroData();
     if (savedData) {
       this.valorGiro = savedData.valorGiro || 0;
-      this.oficinaPagoSeleccionada = savedData.nombreOficina || '';
 
       // Recuperar valores de impuestos
       this.valorComision = savedData.comision || 0;
-      this.ivaComision = savedData.ivaComision || 0;
       this.gmfComision = savedData.gmfComision || 0;
-      this.gmfIvaComision = savedData.gmfIva || 0;
       this.valorTotal = savedData.valorTotal || 0;
 
       // Si hay datos guardados, marcar como calculados
@@ -166,14 +95,24 @@ export class ValorGiroComponent {
         },
       });
     }
+    this.getTipoMonedaService.getTipoMoneda().subscribe({
+      next: (tipos) => {
+        this.tipoMonedas = tipos;
+        const filterCop = tipos.filter(value => value.codigo === 'COP')
+        if (filterCop && filterCop?.length > 0) {
+          this.tipoMoneda = tipos[0]
+        }
+      },
+      error: () => {
+        this.tipoMonedas = [];
+      },
+    });
   }
 
   cleanFields(): void {
     this.datosCalculados = false
     this.valorComision = 0
-    this.ivaComision = 0
     this.gmfComision = 0
-    this.gmfIvaComision = 0
     // Actualizar los datos del giro
     const currentData = this.giroDataService.getGiroData();
     if (currentData) {
@@ -181,18 +120,17 @@ export class ValorGiroComponent {
         ...currentData,
         valorGiro: this.valorGiro,
         cuentaOrigen: this.cuentaOrigen,
-        nombreOficina: this.oficinaPagoSeleccionada,
+        tipoMoneda: this.tipoMoneda,
         comision: this.valorComision,
-        ivaComision: this.ivaComision,
         gmfComision: this.gmfComision,
-        gmfIva: this.gmfIvaComision,
         valorTotal: this.valorTotal
       });
     }
+    this.prevStep();
   }
 
   consultarImpuestos(): void {
-    if (this.valorGiro > 0 && this.cuentaOrigen && this.oficinaPagoSeleccionada) {
+    if (this.valorGiro > 0 && this.cuentaOrigen) {
       this.isLoading = true;
       this.datosCalculados = false;
 
@@ -200,12 +138,10 @@ export class ValorGiroComponent {
       setTimeout(() => {
         // Aquí en el futuro se llamaría a un servicio para obtener los valores de comisión, IVA, GMF, etc.
         this.valorComision = this.valorGiro * 0.20;    // 20% del valor del giro
-        this.ivaComision = this.valorGiro * 0.13;      // 13% del valor del giro  
         this.gmfComision = this.valorGiro * 0.08;      // 8% del valor del giro
-        this.gmfIvaComision = this.valorGiro * 0.04;   // 4% del valor del giro
 
         // Calcular el valor total sumando los valores anteriores y el valor del giro
-        this.valorTotal = +this.valorComision + +this.ivaComision + +this.gmfComision + +this.gmfIvaComision + +this.valorGiro;
+        this.valorTotal = +this.valorComision + +this.gmfComision + +this.valorGiro;
 
         // Actualizar los datos del giro
         const currentData = this.giroDataService.getGiroData();
@@ -214,11 +150,9 @@ export class ValorGiroComponent {
             ...currentData,
             valorGiro: this.valorGiro,
             cuentaOrigen: this.cuentaOrigen,
-            nombreOficina: this.oficinaPagoSeleccionada,
+            tipoMoneda: this.tipoMoneda,
             comision: this.valorComision,
-            ivaComision: this.ivaComision,
             gmfComision: this.gmfComision,
-            gmfIva: this.gmfIvaComision,
             valorTotal: this.valorTotal
           });
         }
@@ -227,6 +161,7 @@ export class ValorGiroComponent {
         this.datosCalculados = true;
         // Emitir true para indicar que los datos están listos
         this.valorConfirmado.emit(true);
+        this.nextStep();
       }, 1500);
     } else {
       alert('Por favor complete todos los campos requeridos');
@@ -250,7 +185,7 @@ export class ValorGiroComponent {
   validateTotalValue(event: Event): void {
     try {
       const input = event.target as HTMLInputElement;
-      this.valorTotal = +this.valorComision + +this.ivaComision + +this.gmfComision + +this.gmfIvaComision + +input.value
+      this.valorTotal = +this.valorComision + +this.gmfComision + +input.value
       this.cleanFields()
     } catch (error) {
       throw error
