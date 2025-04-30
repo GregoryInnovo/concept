@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GiroDataService, GiroData } from '../../services/storage/giro-data.service';
 
@@ -10,13 +10,17 @@ import { GiroDataService, GiroData } from '../../services/storage/giro-data.serv
   styleUrls: ['./comprobante-giro.component.css']
 })
 export class ComprobanteGiroComponent implements OnInit {
+  @Input() closeResume!: () => void;
+  @Input() isResumen: boolean = false;
   @Output() cerrarComprobante = new EventEmitter<void>();
 
   datosComprobante: GiroData | null = null;
+  resumen: boolean = false;
 
   constructor(private giroDataService: GiroDataService) {}
 
   ngOnInit() {
+    this.resumen = this.isResumen;
     this.datosComprobante = this.giroDataService.getGiroData();
   }
 
@@ -43,11 +47,6 @@ export class ComprobanteGiroComponent implements OnInit {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(valor);
-  }
-
-  obtenerOficinaCompleta(): string {
-    if (!this.datosComprobante) return '';
-    return `${this.datosComprobante.codigoOficina} ${this.datosComprobante.nombreOficina} - ${this.datosComprobante.regional}`;
   }
 
   aceptar() {

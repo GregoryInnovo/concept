@@ -2,25 +2,28 @@
   <div class="modal-content">
     <!-- <button class="btn-cerrar" (click)="aceptar()" aria-label="Cerrar">×</button> -->
     <div class="comprobante" *ngIf="datosComprobante">
-      <h2 class="titulo">COMPROBANTE EMISION DE GIROS</h2>
+      @if (!resumen) {
+        <h2 class="titulo">COMPROBANTE EMISION DE GIROS</h2>
+      } @else {
+        <h2 class="titulo">RESUMEN EMISION DE GIROS</h2>
+      }
 
+      @if (!resumen) {
       <div class="fecha-hora">
         <div>
           Fecha de emisión: {{ formatearFecha(datosComprobante.fechaEmision) }}
         </div>
         <div>Hora: {{ formatearHora(datosComprobante.fechaEmision) }}</div>
       </div>
+      }
 
       <div class="info-grid">
+        @if (!resumen) {
         <div class="info-row">
           <div class="label">Nro. Giro</div>
           <div class="value">{{ datosComprobante.numeroGiro }}</div>
         </div>
-
-        <div class="info-row">
-          <div class="label">Nombre de la oficina</div>
-          <div class="value">{{ obtenerOficinaCompleta() }}</div>
-        </div>
+        }
 
         <div class="info-row">
           <div class="label">Cajero</div>
@@ -51,35 +54,21 @@
         <div class="info-row">
           <div class="label">Comisiones</div>
           <div class="value">
-            {{ formatearMoneda(datosComprobante.comision) }}
-          </div>
-        </div>
-
-        <div class="info-row">
-          <div class="label">I.V.A Comisión</div>
-          <div class="value">
-            {{ formatearMoneda(datosComprobante.ivaComision) }}
-          </div>
-        </div>
-
-        <div class="info-row">
-          <div class="label">GMF del IVA de la Comisión</div>
-          <div class="value">
-            {{ formatearMoneda(datosComprobante.gmfIva) }}
+            {{ formatearMoneda(datosComprobante.comision) }} {{ datosComprobante.tipoMoneda?.codigo }}
           </div>
         </div>
 
         <div class="info-row">
           <div class="label">GMF de la Comisión</div>
           <div class="value">
-            {{ formatearMoneda(datosComprobante.gmfComision) }}
+            {{ formatearMoneda(datosComprobante.gmfComision) }} {{ datosComprobante.tipoMoneda?.codigo }}
           </div>
         </div>
 
         <div class="info-row total">
           <div class="label">Total a pagar</div>
           <div class="value">
-            {{ formatearMoneda(datosComprobante.valorTotal) }}
+            {{ formatearMoneda(datosComprobante.valorTotal) }} {{ datosComprobante.tipoMoneda?.codigo }}
           </div>
         </div>
 
@@ -110,6 +99,7 @@
         </ng-container> -->
       </div>
 
+      @if (!resumen) {
       <div class="notas">
         <p>
           Recuerde que pasados 15 días hábiles sin cobrar el giro, será devuelto
@@ -121,7 +111,9 @@
           cuenta y valor sean correctos.
         </p>
       </div>
+      }
 
+      @if (!resumen) {
       <div class="email-info" *ngIf="datosComprobante.emailSolicitante">
         <p>
           En constancia de lo anterior se envía comprobante a la cuenta de
@@ -129,10 +121,17 @@
         </p>
         <p class="email">{{ datosComprobante.emailSolicitante }}</p>
       </div>
+      }
 
+      @if (!resumen) {
       <div class="button-container">
         <button class="btn-aceptar" (click)="aceptar()">ACEPTAR</button>
       </div>
+      } @else {
+      <div class="button-container">
+        <button class="btn-aceptar" (click)="closeResume()">CONFIRMAR</button>
+      </div>
+      }
     </div>
   </div>
 </div>

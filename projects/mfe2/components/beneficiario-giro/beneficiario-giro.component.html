@@ -34,7 +34,8 @@
     <div class="info-row">
       <div class="info-group">
         <label>VALOR TOTAL DEL GIRO</label>
-        <div class="info-value">$ {{ solicitanteData.valorTotalGiro }}</div>
+        <div class="info-value">{{ formatearValor(solicitanteData.valorTotalGiro) }} {{
+          solicitanteData.tipoMoneda.codigo }}</div>
       </div>
       <div class="info-group">
         <label>CUENTA ORIGEN</label>
@@ -87,9 +88,12 @@
 </div>
 
 @if (showComprobante) {
-<app-comprobante-giro (cerrarComprobante)="onCerrarComprobante()" />
+<app-comprobante-giro (cerrarComprobante)="onCerrarComprobante()" [isResumen]="false" />
 }
 
+@if (showResumen) {
+<app-comprobante-giro (cerrarComprobante)="onCerrarComprobante()" [isResumen]="true" [closeResume]="confirmEmit" />
+}
 @if (showConfirmDialog) {
 <app-confirmation-dialog title="Confirmar Emisión"
   message="¿Está seguro que desea emitir el giro con los datos ingresados?" (confirm)="onConfirmEmitir()"

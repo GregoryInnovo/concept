@@ -26,6 +26,7 @@ export class BeneficiarioGiroComponent implements OnInit {
   @Output() beneficiarioConfirmado = new EventEmitter<void>();
   @Output() reiniciarProceso = new EventEmitter<void>();
 
+  showResumen = false;
   showComprobante = false;
   showConfirmDialog = false;
   isLoading = false;
@@ -72,11 +73,12 @@ export class BeneficiarioGiroComponent implements OnInit {
         telefono: savedData.telefonoSolicitante,
         email: savedData.emailSolicitante,
         valorTotalGiro: savedData.valorTotal,
-        cuentaOrigen: savedData.cuentaOrigen
+        cuentaOrigen: savedData.cuentaOrigen,
+        tipoMoneda: savedData.tipoMoneda,
       };
 
       // Set autorizado checkbox based on tipo de solicitud
-      this.isAutorizadoChecked = savedData.tipoSolicitud === 'N - CHEQUE';
+      this.isAutorizadoChecked = savedData.tipoSolicitud?.codigo === 'N';
 
       if (savedData.tipoDocumentoBeneficiario) {
         this.beneficiarioData = {
@@ -95,10 +97,11 @@ export class BeneficiarioGiroComponent implements OnInit {
     }
   }
 
-  formatearMoneda(valor: number): string {
+  formatearValor(valor: number): string {
     return new Intl.NumberFormat('es-CO', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
     }).format(valor);
   }
 
@@ -136,6 +139,11 @@ export class BeneficiarioGiroComponent implements OnInit {
     return Math.random() >= 0.5;
   }
 
+  confirmEmit = () => {
+    this.showResumen = false;
+    this.showConfirmDialog = true
+  }
+
   emitir() {
     if (!this.beneficiarioData.tipoDocumento ||
       !this.beneficiarioData.numeroDocumento ||
@@ -163,10 +171,16 @@ export class BeneficiarioGiroComponent implements OnInit {
       return;
     }
 
+    this.giroDataService.updateGiroData({
+      tipoDocumentoBeneficiario: this.beneficiarioData.tipoDocumento,
+      numeroDocumentoBeneficiario: this.beneficiarioData.numeroDocumento,
+      nombreBeneficiario: this.beneficiarioData.nombreCliente
+    });
+
     this.getListaRestrivtivaService.getClientListaRestrictiva(this.beneficiarioData.tipoDocumento, this.beneficiarioData.numeroDocumento).subscribe({
       next: (dataBeneficiario) => {
         if (this.getRandomBoolean()) {
-          this.showConfirmDialog = true;
+          this.showResumen = true;
         } else {
           alert('El usuario tiene reportes y esta en listas restrictivas, por lo que no se puede realizar la transacción')
         }
@@ -217,7 +231,7 @@ export class BeneficiarioGiroComponent implements OnInit {
     const identificacionBeneficiario = giroData.numeroDocumentoBeneficiario;
     const nombreBeneficiario = giroData.nombreBeneficiario;
     const tipoIdentificacionBeneficiario = giroData.tipoDocumentoBeneficiario;
-    let codigoTipo = giroData.tipoSolicitud || 'N';
+    let codigoTipo = giroData.tipoSolicitud?.codigo || 'N';
     if (codigoTipo.length > 1) {
       codigoTipo = codigoTipo.charAt(0); // Solo el primer caracter
     }
@@ -239,7 +253,6 @@ export class BeneficiarioGiroComponent implements OnInit {
       idGiro: 1073741824,
       codigoEstado: 'P', // Procesando
       codigoTipo: codigoTipo,
-      nombreOficina: giroData.nombreOficina || 'Oficina',
       usuarioRed: giroData.cajero || 'usuario',
       identificacionBeneficiario: identificacionBeneficiario,
       nombreBeneficiario: nombreBeneficiario,
@@ -251,8 +264,6 @@ export class BeneficiarioGiroComponent implements OnInit {
       celularSolicitante: giroData.telefonoSolicitante,
       valorSolicitud: giroData.valorGiro,
       valorComision: giroData.comision,
-      ivaComision: giroData.ivaComision,
-      gmfIvaComision: giroData.gmfIva,
       gmfComision: giroData.gmfComision,
       totalPagar: giroData.valorTotal,
       cuentaOrigen: giroData.cuentaOrigen ? giroData.cuentaOrigen.numeroCuenta : ''

@@ -3,11 +3,12 @@
   <div class="consulta-form">
     <div class="form-group">
       <label for="tipoSolicitud">TIPO SOLICITUD</label>
-      <select id="tipoSolicitud" [(ngModel)]="selectedTipoSolicitud" class="form-control" required (change)="cleanFields('type')">
-        <option value="" disabled selected>Seleccione tipo de solicitud</option>
-        @for (tipo of tiposSolicitud; track tipo) {
-          <option [value]="tipo">{{tipo}}</option>
-        }
+      <select id="tipoSolicitud" [(ngModel)]="selectedTipoSolicitud" class="form-control" required
+        (change)="cleanFields('type')">
+        <option [ngValue]="null" disabled>Seleccione tipo de solicitud</option>
+        <option *ngFor="let tipo of tiposSolicitud" [ngValue]="tipo">
+          {{ tipo?.codigo }} - {{ tipo?.descripcion }}
+        </option>
       </select>
     </div>
 
@@ -16,22 +17,15 @@
       <select id="tipoId" [(ngModel)]="selectedTipoId" class="form-control" (change)="cleanFields('typeDoc')">
         <option value="" disabled selected>Seleccione tipo de identificación</option>
         @for (tipo of tiposIdentificacion; track tipo.codigo) {
-          <option [value]="tipo.codigo">{{ tipo.codigo }} - {{ tipo.descripcion }}</option>
+        <option [value]="tipo.codigo">{{ tipo.codigo }} - {{ tipo.descripcion }}</option>
         }
       </select>
     </div>
 
     <div class="form-group">
       <label for="numId">NÚMERO IDENTIFICACIÓN CLIENTE</label>
-      <input 
-        type="text" 
-        id="numId" 
-        [(ngModel)]="numeroIdentificacion" 
-        class="form-control"
-        maxlength="10"
-        pattern="[0-9]*"
-        placeholder="Ingrese número de identificación"
-        (input)="validateNumericInput($event)">
+      <input type="text" id="numId" [(ngModel)]="numeroIdentificacion" class="form-control" maxlength="10"
+        pattern="[0-9]*" placeholder="Ingrese número de identificación" (input)="validateNumericInput($event)">
     </div>
 
     <button class="btn-search" (click)="onBuscar()">BUSCAR</button>
@@ -39,29 +33,29 @@
 
   <!-- Loading Spinner -->
   @if (isLoading) {
-    <div class="loading-spinner">
-      <div class="spinner"></div>
-      <p>Cargando información del cliente...</p>
-    </div>
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Cargando información del cliente...</p>
+  </div>
   }
 
   <!-- Client Information Section -->
   @if (consultaData && !isLoading) {
-    <div class="client-info">
-      <div class="info-group">
-        <label>NOMBRE CLIENTE</label>
-        <div class="info-value">{{consultaData.nombreCliente}}</div>
-      </div>
-      
-      <div class="info-group">
-        <label>TELÉFONO</label>
-        <div class="info-value">{{consultaData.telefono}}</div>
-      </div>
-      
-      <div class="info-group">
-        <label>MAIL</label>
-        <div class="info-value">{{consultaData.email}}</div>
-      </div>
+  <div class="client-info">
+    <div class="info-group">
+      <label>NOMBRE CLIENTE</label>
+      <div class="info-value">{{consultaData.nombreCliente}}</div>
     </div>
+
+    <div class="info-group">
+      <label>TELÉFONO</label>
+      <div class="info-value">{{consultaData.telefono}}</div>
+    </div>
+
+    <div class="info-group">
+      <label>MAIL</label>
+      <div class="info-value">{{consultaData.email}}</div>
+    </div>
+  </div>
   }
 </div>

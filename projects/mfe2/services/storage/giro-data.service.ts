@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ResponseCuentas } from '../emision/get-cuentas.service';
+import { ResponseTipoGiro } from '../emision/get-tipo-giro.service';
+import { ResponseTipoMoneda } from '../emision/get-tipo-moneda.service';
 
 export interface GiroData {
   // Datos del solicitante
-  tipoSolicitud: string;
+  tipoSolicitud: ResponseTipoGiro | null;
   tipoDocumentoSolicitante: string;
   numeroDocumentoSolicitante: string;
   nombreSolicitante: string;
   telefonoSolicitante: string;
   emailSolicitante: string;
   cuentaOrigen: ResponseCuentas | null;
+  tipoMoneda: ResponseTipoMoneda | null;
 
   // Datos del beneficiario
   tipoDocumentoBeneficiario: string;
@@ -26,14 +29,9 @@ export interface GiroData {
   numeroGiro?: string;
   valorGiro: number;
   comision: number;
-  ivaComision: number;
   gmfComision: number;
-  gmfIva: number;
   valorTotal: number;
 
-  // Datos de la oficina
-  codigoOficina: string;
-  nombreOficina: string;
   regional: string;
   cajero: string;
 

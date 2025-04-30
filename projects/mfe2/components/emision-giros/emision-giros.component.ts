@@ -64,7 +64,7 @@ export class EmisionGirosComponent {
         return this.pasoConsultaCompleto;
       case 2:
         const giroData = this.giroDataService.getGiroData();
-        const validateFields = giroData?.ivaComision && giroData?.gmfComision && giroData?.gmfIva && giroData?.comision
+        const validateFields = giroData?.gmfComision && giroData?.comision
         return giroData && giroData.valorGiro && validateFields ? giroData.valorGiro > 0 : false;
       case 3:
         return true;
@@ -73,7 +73,11 @@ export class EmisionGirosComponent {
     }
   }
 
-  nextStep() {
+  reiniciarState = () => {
+    this.currentStep = 1;
+  }
+
+  nextStep = () => {
     if (this.currentStep < this.totalSteps) {
       if (!this.canProceedToNextStep()) {
         if (this.currentStep === 1) {
@@ -115,9 +119,11 @@ export class EmisionGirosComponent {
     }
   }
 
-  previousStep() {
+  previousStep = () => {
     if (this.currentStep > 1) {
-      this.currentStep--;
+      if (this.currentStep === 3) {
+        this.currentStep--;
+      }
     }
   }
 } 

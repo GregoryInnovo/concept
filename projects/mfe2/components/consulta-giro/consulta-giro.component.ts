@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GiroDataService } from '../../services/storage/giro-data.service';
@@ -7,6 +7,7 @@ import {
   TipoIdentificacion,
 } from '../../services/emision/tipo-identificacion.service';
 import { GetClienteService } from '../../services/emision/get-cliente.service';
+import { GetTipoGiro, ResponseTipoGiro } from '../../services/emision/get-tipo-giro.service';
 
 interface ConsultaData {
   nombreCliente: string;
@@ -22,22 +23,25 @@ interface ConsultaData {
   styleUrls: ['./consulta-giro.component.css'],
 })
 export class ConsultaGiroComponent implements OnInit {
+  @Input() nextStep!: () => void;
+  @Input() restartProcess!: () => void;
   @Output() datosListos = new EventEmitter<boolean>();
 
   selectedTipoId: string = '';
-  selectedTipoSolicitud: string = '';
+  selectedTipoSolicitud: ResponseTipoGiro | null = null;
   numeroIdentificacion: string = '';
   isLoading: boolean = false;
   consultaData: ConsultaData | null = null;
 
-  tiposSolicitud = ['P - GIRO', 'N - CHEQUE'];
+  tiposSolicitud: ResponseTipoGiro[] = [];
 
   tiposIdentificacion: TipoIdentificacion[] = [];
 
   constructor(
     private giroDataService: GiroDataService,
     private tipoIdentificacionService: TipoIdentificacionService,
-    private getClientInfoService: GetClienteService
+    private getClientInfoService: GetClienteService,
+    private getTipoGiroService: GetTipoGiro
 
   ) {
     // Recuperar datos guardados si existen
@@ -65,6 +69,14 @@ export class ConsultaGiroComponent implements OnInit {
         this.tiposIdentificacion = [];
       },
     });
+    this.getTipoGiroService.getTipoGiros().subscribe({
+      next: (tipos) => {
+        this.tiposSolicitud = tipos;
+      },
+      error: () => {
+        this.tiposSolicitud = [];
+      },
+    });
   }
 
   cleanFields(key: string): void {
@@ -78,6 +90,7 @@ export class ConsultaGiroComponent implements OnInit {
         this.consultaData = null;
         this.numeroIdentificacion = '';
       }
+      this.restartProcess();
       // Si cambia alguno de los valores como tipo de identificación o tipo de solicitud, se actualiza el estado de los datos
       this.datosListos.emit(false); // evita que se emita true cuando se cambia el tipo de identificación o tipo de solicitud
     } catch (error) {
@@ -132,8 +145,11 @@ export class ConsultaGiroComponent implements OnInit {
           emailSolicitante: this?.consultaData?.email,
           cuentaOrigen: null,
           valorGiro: 0,
-          codigoOficina: '',
-          nombreOficina: '',
+          comision: 0,
+          gmfComision: 0,
+          numeroGiro: '',
+          tipoMoneda: null,
+          valorTotal: 0,
           regional: 'Sur',
           cajero: 'LMDR4836',
           fechaEmision: new Date(),
@@ -142,6 +158,7 @@ export class ConsultaGiroComponent implements OnInit {
         this.isLoading = false;
         // Emitimos que los datos están listos
         this.datosListos.emit(true);
+        this.nextStep()
       },
       error: () => {
         this.consultaData = null;
